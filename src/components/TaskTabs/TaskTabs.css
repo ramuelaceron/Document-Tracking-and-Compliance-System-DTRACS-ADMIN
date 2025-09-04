@@ -1,0 +1,83 @@
+/* src/components/TaskTabs/TaskTabs.css */
+.task-tabs-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-left: 20px;
+}
+
+.task-tabs {
+  display: flex;
+  gap: 20px;
+}
+
+/* Tab Link Base Style */
+.task-tab {
+  padding: 10px 0;
+  color: #003366;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  border-bottom: none;
+  transition: color 0.3s ease;
+}
+
+/* Pseudo-element for smooth underline */
+.task-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #003366;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 1px;
+}
+
+/* Active tab: grow the underline to full width */
+.task-tab.active::after {
+  width: 100%;
+}
+
+/* Optional: Keep text bold in active state */
+.task-tab.active {
+  color: #003366;
+}
+
+.task-indicator {
+  position: absolute;
+  top: 8px;
+  right: -12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none; /* Prevent interference */
+}
+
+.task-red {
+  background-color: red;
+}
+
+.task-dropdown {
+  padding: 8px 32px 8px 12px; /* LTR: left, top, right, bottom */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 200px;
+  background-color: white;
+  color: #003366;
+  cursor: pointer;
+  appearance: none; /* Removes default styling */
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23003366' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  padding-right: 36px; /* Make room for custom arrow */
+}

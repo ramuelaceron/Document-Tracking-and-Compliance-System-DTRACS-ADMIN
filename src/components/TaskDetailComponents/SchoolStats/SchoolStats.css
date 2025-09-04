@@ -1,0 +1,216 @@
+/* SchoolStats.css - Updated */
+.school-stats {
+  font-family: "Inter", sans-serif;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.stats-tabs {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  padding: 16px 0;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid #eee;
+}
+
+.tab:last-child {
+  border-right: none;
+}
+
+.tab-count {
+  font-size: 30px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.tab-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.tab:hover,
+.tab.active {
+  background: #A1A1A1;
+}
+
+.tab:hover .tab-count,
+.tab.active .tab-count,
+.tab:hover .tab-label,
+.tab.active .tab-label {
+  color: #ffffff;
+}
+
+/* School list */
+.school-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px 8px;
+}
+
+.school-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  background: #fff;
+  transition: all 0.2s ease;
+  margin-bottom: 8px;
+  padding: 16px;
+  border: 1px solid #f0f0f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.school-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.school-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: -5px;
+  padding-top: 0;
+  border-bottom: none; /* Remove default border */
+  transition: border-bottom 0.2s ease;
+}
+
+/* Add border-bottom only when school-card is hovered */
+.school-card:hover .school-header {
+  border-bottom: 1.5px solid #eee;
+  margin-bottom: 2px;
+  padding-bottom: 8px;
+}
+
+.school-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.school-left img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.school-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  text-align: left;
+  margin-right: 10px;
+  max-width: 300px;
+}
+
+/* Accounts list */
+.accounts-list {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.accounts-list.expanded {
+  max-height: 200px;
+  opacity: 1;
+  margin-top: 12px;
+}
+
+.account-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 8px 44px;
+}
+
+.account-name {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.status-badge.small {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.status-badge.submitted {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.not_submitted {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.status-badge.past_due {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Empty states */
+.no-task-data,
+.no-schools {
+  text-align: center;
+  padding: 32px;
+  color: #6b7280;
+}
+
+.account-status-badge {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.account-status-badge.small {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.clickable-account {
+  color: #2196F3;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.clickable-account:hover {
+  color: #1976D2;
+}
+
+.non-clickable-account {
+  color: #6b7280;
+  cursor: default;
+}

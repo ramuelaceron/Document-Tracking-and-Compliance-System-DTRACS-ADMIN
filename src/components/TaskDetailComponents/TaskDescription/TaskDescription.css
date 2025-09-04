@@ -1,0 +1,119 @@
+.task-description {
+  padding: 1rem 1.5rem; 
+  background: #fff;
+  border-radius: 8px;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.task-icon {
+  background: #333;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.task-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.task-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+  line-height: 30px;
+  flex: 1;
+}
+
+.task-due{
+  font-size: 12px;
+}
+
+.task-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 12px;
+}
+
+.task-author .author {
+  font-weight: 500;
+  color: #333;
+}
+
+.task-author .dot-space {
+  margin: 0 10px;
+  color: black;
+}
+
+.divider {
+  height: 1px;
+  background-color: #ddd;
+  margin: 8px 0;
+  border: none;
+}
+
+.task-author {
+  color: #666;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+
+.task-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Error Container */
+.error-container {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.error-container p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.error-container small {
+  font-size: 14px;
+  color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .task-detail-main {
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .task-meta {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .task-title {
+    font-size: 20px;
+  }
+}

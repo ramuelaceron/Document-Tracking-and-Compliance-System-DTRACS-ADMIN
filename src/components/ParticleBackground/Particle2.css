@@ -1,0 +1,24 @@
+.particle2-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(
+    135deg, 
+    rgba(26, 26, 46, 0.5) 0%,  /* Changed from 0.8 to 0.5 (50% opacity) */
+    rgba(22, 33, 62, 0.3) 100%  /* Changed from 0.6 to 0.3 (30% opacity) */
+  );
+}
+
+/* Fix for particle interactions */
+#tsparticles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

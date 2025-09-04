@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import Login from "./pages/Login/Login";
+import Home from "./pages/Home/Home";
+import RegisteredSchools from "./pages/RegisteredSchools/RegisteredSchools";
+import AccountControl from "./pages/AccountControl/AccountControl";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import SchoolAccDisplay from "./pages/RegisteredSchools/SchoolAccDisplay/SchoolAccDisplay";
+import SectionPage from "./pages/Sections/SectionPage";
+import FocalPage from "./pages/Focals/FocalPage"
+import TaskDetailPage from "./pages/TaskDetailPage/TaskDetailPage"
+
 
 function App() {
+  const location = useLocation();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes location={location} key={location.pathname}>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<Login />} />
+
+      <Route element={<Home />}>
+        <Route path="/sections" element={<Dashboard />} />
+        <Route path="/sections/:sectionId" element={<SectionPage />} />
+        <Route path="/sections/:sectionId/focals/:focalId" element={<FocalPage />} />
+        <Route path="/sections/:sectionId/focals/:focalId/documents/:taskId" element={<TaskDetailPage />} />
+
+        <Route path="/registered-schools" element={<RegisteredSchools />} />
+        <Route path="/schools/:schoolSlug" element={<SchoolAccDisplay />} />
+        <Route path="/account-control" element={<AccountControl />} />
+      </Route>
+
+    </Routes>
   );
 }
 

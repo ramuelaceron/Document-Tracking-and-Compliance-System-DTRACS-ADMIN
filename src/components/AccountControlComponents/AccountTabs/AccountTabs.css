@@ -1,0 +1,40 @@
+/* Top bar container */
+.account-tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border-bottom: 2px solid #eee;
+  padding: 8px 20px;
+  background: #fff;
+  margin: 0 20px;
+}
+
+/* Left side: the tabs */
+.account-tabs {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* space between tabs */
+}
+
+/* Each tab button */
+.account-tabs button {
+  background: none;
+  border: none;
+  padding: 10px 0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color .2s ease, border-color .2s ease;
+}
+
+.account-tabs button:hover {
+  color: #1e3a8a;
+}
+
+/* Active state: just change the color of the already-reserved underline */
+.account-tabs button.active {
+  color: #1e3a8a;
+  border-bottom-color: #1e3a8a;   /* underline shows without moving layout */
+}
