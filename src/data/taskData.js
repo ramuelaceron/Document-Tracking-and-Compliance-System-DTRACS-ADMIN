@@ -5,6 +5,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "School Management Monitoring and Evaluation",
+      user_id: "FOCAL-0001",
       full_name: "Isidra L. Galman",
       avatar: "",
       path: "task-list",
@@ -21,7 +22,7 @@ export const taskData = {
           title: "Comprehensive Monitoring and Evaluation Framework for Effective School Management ",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -39,21 +40,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -77,6 +78,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Research",
+      user_id: "FOCAL-0002",
       full_name: "Edward R. Manuel",
       avatar: "",
       path: "task-list",
@@ -93,7 +95,7 @@ export const taskData = {
           title: "Conduct and Disseminate Action Research to Improve Teaching and Learning Practices ",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -111,21 +113,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -142,6 +144,7 @@ export const taskData = {
       office: "School Governance and Operations Division",
       section_designation: "Planning",
       full_name: "Charles M. Patio",
+      user_id: "FOCAL-0003",
       avatar: "",
       path: "task-list",
       tasklist: [
@@ -157,7 +160,7 @@ export const taskData = {
           title: "Formulate and Monitor the School Improvement Plan (SIP) and Annual Implementation Plan (AIP)",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -175,21 +178,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -208,6 +211,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Human Resource Development",
+      user_id: "FOCAL-0004",
       full_name: "Arlene P. Alora",
       avatar: "",
       path: "task-list",
@@ -224,7 +228,7 @@ export const taskData = {
           title: "Implement Capacity-Building and Professional Development Programs for Teachers and School Personnel",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -242,21 +246,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -275,6 +279,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Social Mobilization and Networking",
+      user_id: "FOCAL-0005",
       full_name: "Donna Jane M. Alfonso",
       avatar: "",
       path: "task-list",
@@ -291,7 +296,7 @@ export const taskData = {
           title: "Submit Partnership and Stakeholder Engagement Reports for School Programs and Projects",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -309,21 +314,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -342,6 +347,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Education Facilities",
+      user_id: "FOCAL-0006",
       full_name: "Precious Joy A. Coronado",
       avatar: "",
       path: "task-list",
@@ -358,7 +364,7 @@ export const taskData = {
           title: "Prepare and Submit School Facilities Status and Maintenance Report ",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -376,21 +382,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -409,6 +415,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Disaster Risk Reduction and Management",
+      user_id: "FOCAL-0007",
       full_name: "Ernane S. Escuvania",
       avatar: "",
       path: "task-list",
@@ -425,7 +432,7 @@ export const taskData = {
           title: "Prepare and Submit the School Disaster Risk Reduction and Management (DRRM) Plan and Reports",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -443,21 +450,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -476,6 +483,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Dental",
+      user_id: "FOCAL-0008",
       full_name: "Dr. Liza M. Cruz",
       avatar: "",
       path: "task-list",
@@ -492,7 +500,7 @@ export const taskData = {
           title: "Submit School-Based Dental Health Reports and Accomplishment Updates",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -510,21 +518,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -541,6 +549,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Medical",
+      user_id: "FOCAL-0009",
       full_name: "Nurse Juan P. Dela Cruz",
       avatar: "",
       path: "task-list",
@@ -557,7 +566,7 @@ export const taskData = {
           title: "Submit Medical Reports and Health Assessment of Learners and Personnel",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -575,21 +584,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -606,6 +615,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "School-Based Feeding Program",
+      user_id: "FOCAL-0010",
       full_name: "Nurse Anna L. Perez",
       avatar: "",
       path: "task-list",
@@ -622,7 +632,7 @@ export const taskData = {
           title: "Prepare and Submit School-Based Feeding Program Accomplishment and Status Reports",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -640,21 +650,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -671,6 +681,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Gulayan sa Paaralan Program",
+      user_id: "FOCAL-0011",
       full_name: "Teacher Joy L. Perez",
       avatar: "",
       path: "task-list",
@@ -687,7 +698,7 @@ export const taskData = {
           title: "Submit School Gulayan sa Paaralan Program (GPP) Accomplishment and Monitoring Report",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -705,21 +716,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -736,6 +747,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Water, Sanitation, and Hygiene in Schools",
+      user_id: "FOCAL-0012",
       full_name: "Teacher Joy L. Perez",
       avatar: "",
       path: "task-list",
@@ -752,7 +764,7 @@ export const taskData = {
           title: "Submit Implementation Report on Water, Sanitation, and Hygiene (WinS) Program Compliance and Activities",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -770,21 +782,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -801,6 +813,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "National Drug Education Program",
+      user_id: "FOCAL-0013",
       full_name: "Teacher Marry L. Perez",
       avatar: "",
       path: "task-list",
@@ -817,7 +830,7 @@ export const taskData = {
           title: "Prepare and Submit National Drug Education Program (NDEP) Implementation Report",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -835,21 +848,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -866,6 +879,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Reproductive Health",
+      user_id: "FOCAL-0014",
       full_name: "Teacher Mynel L. Perez",
       avatar: "",
       path: "task-list",
@@ -882,7 +896,7 @@ export const taskData = {
           title: "Prepare and Submit School-Based Reproductive Health Education Program Report",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -900,21 +914,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [
@@ -933,6 +947,7 @@ export const taskData = {
     {
       office: "School Governance and Operations Division",
       section_designation: "Youth Formation",
+      user_id: "FOCAL-0015",
       full_name: "Maureen Jane Q. Alangco",
       avatar: "",
       path: "task-list",
@@ -949,7 +964,7 @@ export const taskData = {
           title: "Submit Accomplishment and Progress Reports on Youth Formation Programs and Activities",
           description:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          task_status: "Completed",
+          task_status: "Ongoing",
           schools_required: [
             {
               school_name: "Biñan City Science & Technology High School",
@@ -967,21 +982,21 @@ export const taskData = {
               account_name: "Juan Ponce Dela Cruz",
               school_name: "Biñan City Science & Technology High School",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0002",
               account_name: "Jestro Diaz",
               school_name: "Biñan City Senior High School-San Antonio Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
             {
               school_id: "SCHOOL-0003",
               account_name: "Joshua Crisostomo",
               school_name: "Biñan City Senior High School-Sto.Tomas Campus",
               link: "None",
-              status: "Completed",
+              status: "Ongoing",
             },
           ],
           attachment: [

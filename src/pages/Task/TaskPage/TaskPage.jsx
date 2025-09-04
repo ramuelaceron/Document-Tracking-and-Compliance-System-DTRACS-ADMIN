@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import TaskTabs from "../../../components/TaskTabs/TaskTabs";
 import { taskData } from "../../../data/taskData";
 import { createSlug } from "../../../utils/idGenerator";
@@ -7,17 +7,17 @@ import "./TaskPage.css";
 
 const TaskPage = () => {
   const [selectedSort, setSelectedSort] = useState("newest");
+  const { sectionId } = useParams(); // Get the section ID from URL params
 
-  // Extract all offices
+  // Extract all offices for the current section only
   const allOffices = useMemo(() => (
     [...new Set(
-      Object.values(taskData)
-        .flat()
+      (taskData[sectionId] || [])
         .flatMap(section => section.tasklist.map(task => task.office))
     )].sort()
-  ), []);
+  ), [sectionId]);
 
-  // Flatten and categorize tasks based on deadline
+  // Flatten and categorize tasks based on deadline - FILTERED BY SECTION ID AND USER ID
   const { upcomingTasks, pastDueTasks, completedTasks } = useMemo(() => {
     const upcoming = [];
     const pastDue = [];
@@ -25,9 +25,16 @@ const TaskPage = () => {
 
     const now = new Date();
 
-    Object.entries(taskData).forEach(([sectionId, sections]) => {
-      sections.forEach(section => {
-        section.tasklist.forEach(task => {
+    // Only process the current section
+    const sections = taskData[sectionId] || [];
+    
+    sections.forEach(section => {
+      // For each focal person in the section
+      const user_id = section.user_id; // Get the focal person's user_id
+      
+      section.tasklist.forEach(task => {
+        // Only include tasks where creator_id matches user_id
+        if (task.creator_id === user_id) {
           const taskDeadline = new Date(task.deadline);
           const taskStatus = task.task_status || "Ongoing";
 
@@ -66,7 +73,7 @@ const TaskPage = () => {
           } else {
             upcoming.push(taskDataObj);
           }
-        });
+        }
       });
     });
 
@@ -75,7 +82,7 @@ const TaskPage = () => {
       pastDueTasks: pastDue, 
       completedTasks: completed 
     };
-  }, []);
+  }, [sectionId]);
 
   // Sort tasks based on selected option
   const sortTasks = (tasks, sortOption) => {
@@ -126,7 +133,8 @@ const TaskPage = () => {
         upcomingTasks: sortTasks(upcomingTasks, selectedSort),
         pastDueTasks: sortTasks(pastDueTasks, selectedSort),
         completedTasks: sortTasks(completedTasks, selectedSort),
-        selectedSort // Pass the current sort option
+        selectedSort, // Pass the current sort option
+        sectionId // Pass the sectionId to child components
       }} />
     </div>
   );

@@ -80,7 +80,7 @@ const TaskIncomplete = () => {
                   <span className="incomplete-date-bold">{date}</span>
                   <span className="incomplete-weekday"> ({weekday})</span>
 
-                  <div className="header-actions">
+                  <div className="incomplete-header-actions">
                     <span className="incomplete-task-count">{tasks.length}</span>
                     <span className="incomplete-dropdown-arrow">
                       {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}

@@ -82,7 +82,7 @@ const TaskHistory = () => {
                   <span className="history-date-bold">{date}</span>
                   <span className="history-weekday"> ({weekday})</span>
 
-                  <div className="header-actions">
+                  <div className="history-header-actions">
                     <span className="history-task-count">{tasks.length}</span>
                     <span className="history-dropdown-arrow">
                       {isOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}

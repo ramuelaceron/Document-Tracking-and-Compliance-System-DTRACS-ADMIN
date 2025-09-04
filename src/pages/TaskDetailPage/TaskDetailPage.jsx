@@ -222,7 +222,7 @@ const TaskDetailPage = () => {
           />
           
           {/* Comment Section */}
-          <div className="comment-section">
+          <div className="task-comment-section">
             {/* Add Comment Button */}
             <SharedButton variant="text" size="medium" onClick={toggleCommentBox} aria-label="Add comment">
               <RiAccountPinBoxLine className="icon-md" /> Add comment

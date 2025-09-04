@@ -59,7 +59,7 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
           className="task-icon"
           style={{ backgroundColor: statusColor }}
         >
-          <PiClipboardTextBold className="icon-lg" style={{ color: "white" }} />
+          <PiClipboardTextBold className="task-icon-lg" style={{ color: "white" }} />
         </div>
         <h1 className="task-title">{task?.title || "Untitled Task"}</h1>
       </div>
@@ -78,7 +78,7 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
         )}
       </div>
 
-      <div className="divider" />
+      <div className="task-divider" />
 
       {/* Author & Date */}
       <div className="task-author">

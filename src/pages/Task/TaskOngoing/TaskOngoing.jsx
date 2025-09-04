@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { PiClipboardTextBold } from "react-icons/pi";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { createSlug } from "../../../utils/idGenerator";
-import CreateTask from "../../../components/CreateTask/CreateTask";
 import { ToastContainer, toast } from "react-toastify";
 import {
   formatDate,
@@ -67,12 +66,6 @@ const TaskOngoing = () => {
   return (
     <div className="ongoing-app">
       <main className="ongoing-main">
-        <CreateTask
-          onTaskCreated={() => {
-            toast.success("Task created!");
-          }}
-        />
-
         {sortedDates.length > 0 ? (
           sortedDates.map((date) => {
             const tasks = groupedByDate[date];

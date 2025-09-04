@@ -8,6 +8,7 @@
 html, body {
   height: 100%;
   font-family: 'Roboto', sans-serif;
+  overflow-x: hidden;
 }
 
 /* App Header */
@@ -23,6 +24,7 @@ html, body {
   left: 0;
   right: 0;
   z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Left side: menu + logo */
@@ -44,11 +46,11 @@ html, body {
   margin-left: -3px;
   margin-right: 0.75rem;
   transition: background 0.2s ease;
+  border-radius: 6px;
 }
 
 .menu-btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
 }
 
 .header-logo-container {
@@ -69,106 +71,169 @@ html, body {
   position: relative;
 }
 
+/* Profile Button Wrapper */
 .profile-btn {
-  position: relative;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
+  margin-right: 10px;
 }
 
+/* Avatar Circle with Chevron */
 .profile-icon-wrapper {
   position: relative;
-  width: 50px;
-  height: 60px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background-color: #203061;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .profile-icon-wrapper:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.profile-main-icon {
-  font-size: 40px;
+/* Profile Image */
+.header-profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
 }
 
+/* Chevron Icon (bottom-right inside circle) */
 .profile-sub-icon {
   position: absolute;
-  bottom: 5px;
-  right: 2px;
-  font-size: 15px;
+  bottom: -2px;
+  right: -1px;
+  font-size: 16px;
   color: #203061;
   background-color: white;
   border-radius: 50%;
+  pointer-events: none; /* Prevent interfering with button click */
 }
 
-/* Profile dropdown */
+/* Profile Dropdown */
 .profile-dropdown {
   position: absolute;
+  top: 68px;
   right: 0;
-  top: 65px; /* slightly below header */
+  width: 280px;
   background: white;
   border: 1px solid #ddd;
-  border-radius: 10px;
-  width: 250px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   z-index: 2000;
   overflow: hidden;
   animation: dropdownFade 0.2s ease;
-}
-
-@keyframes dropdownFade {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.profile-info {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  background: #f9f9f9;
-}
-
-.profile-avatar {
-  font-size: 42px;
-  color: #203061;
-  margin-right: 10px;
-}
-
-.profile-details {
-  display: flex;
-  flex-direction: column;
   font-size: 14px;
 }
 
-.profile-email, 
-.profile-id {
-  font-size: 12px;
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown Profile Info */
+.profile-info {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+  background: #f8f9fc;
+  border-bottom: 1px solid #eee;
+}
+
+/* Avatar in dropdown */
+.profile-info .header-profile-avatar-img {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #e0e0e0;
+}
+
+.header-profile-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.header-profile-details strong {
+  font-size: 15px;
+  color: #333;
+}
+
+.profile-email {
+  font-size: 13px;
   color: #666;
 }
 
-/* Dropdown items */
-.dropdown-item {
-  width: 100%;
-  padding: 12px 16px;
-  text-align: left;
+/* Divider */
+hr {
+  margin: 0;
   border: none;
-  background: none;
-  cursor: pointer;
+  border-top: 1px solid #eee;
+}
+
+/* Dropdown Menu Items */
+.dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
   font-size: 14px;
   transition: background 0.2s ease;
 }
 
 .dropdown-item:hover {
-  background: #f0f0f0;
+  background-color: #f0f8ff;
+}
+
+.dropdown-item svg {
+  flex-shrink: 0;
+  color: #2196f3;
+}
+
+/* Generated Avatar Styles */
+.generated-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.dropdown-avatar-generated {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+}
+
+.profile-icon-wrapper .generated-avatar {
+  width: 45px;
+  height: 45px;
+  font-size: 18px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

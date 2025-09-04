@@ -1,8 +1,7 @@
-// src/pages/Sections/SectionPage.jsx
 import React from "react";
 import { useParams } from "react-router-dom";
 import { taskData } from "../../data/taskData";
-import FocalCard from "../../components/FocalCard/FocalCard"; // Changed import
+import FocalCard from "../../components/FocalCard/FocalCard";
 import { Outlet } from 'react-router-dom';
 import "./SectionPage.css";
 
@@ -29,26 +28,29 @@ const SectionPage = () => {
           { name: "Pending", value: 25 }
         ];
 
+        // Pass the complete task data instead of just simplified documents
         const documents = focal.tasklist.map(task => ({
           id: task.task_id,
           title: task.title,
-          progress: task.task_status === "Completed" ? 100 : 50 // Simplified progress calculation
+          progress: task.task_status === "Completed" ? 100 : 50, // Simplified progress calculation
+          // Include all task data needed for TaskDetailPage
+          ...task
         }));
 
         return (
           <FocalCard
-            key={focal.id || `focal-${index}`} // Use id if available, otherwise fallback
+            key={focal.id || `focal-${index}`}
             section={focal.section_designation}
             name={focal.full_name}
-            role={focal.office} // Using office as role
+            role={focal.office}
             stats={stats}
             documents={documents}
             sectionId={sectionId}
-            id={focal.creator_id || `focal-${index}`} // Pass the creator_id or fallback
+            id={focal.creator_id || `focal-${index}`}
           />
         );
       })}
-      <Outlet /> {/* In case you want to render nested routes below */}
+      <Outlet />
     </div>
   );
 };

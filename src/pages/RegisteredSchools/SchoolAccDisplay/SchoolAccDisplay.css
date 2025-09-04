@@ -5,7 +5,8 @@
   width: 100%;
   max-width: 1200px;
   padding: 2rem 1rem;
-  padding-top: 2px;
+  padding-top: 0;
+  margin-top: -13px;
 }
 
 .account-header {
@@ -58,6 +59,7 @@
   align-items: flex-start;
   padding: 5px;
   gap: 1rem; 
+  border-bottom: none;
 }
 
 .account-item:last-child {

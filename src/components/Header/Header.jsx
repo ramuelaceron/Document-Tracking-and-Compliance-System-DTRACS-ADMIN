@@ -3,16 +3,45 @@ import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import { GiHamburgerMenu } from "react-icons/gi";
 import logo from "../../assets/images/logo-w-text.png";
-import { FaUser, FaSignOutAlt, FaUserCircle } from "react-icons/fa"; 
+import { FaUser, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 import { IoChevronDownCircle } from "react-icons/io5";
+import { generateAvatar } from "../../utils/iconGenerator";
+import { userAvatars } from "../../data/accountData"; // Update path
 
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [avatarProps, setAvatarProps] = useState(null);
   const dropdownRef = useRef(null);
 
+  // ✅ Load user from sessionStorage on mount
+  useEffect(() => {
+    const savedUser = sessionStorage.getItem("currentUser");
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      setCurrentUser(user);
+      
+      // Try to get avatar from userAvatars mapping
+      const avatarFromMapping = userAvatars[user.email] || 
+                               userAvatars[`${user.first_name} ${user.last_name}`.toLowerCase()] ||
+                               userAvatars[`${user.first_name} ${user.middle_name} ${user.last_name}`.toLowerCase()];
+      
+      // If no avatar found in mapping, generate one
+      if (!avatarFromMapping) {
+        const fullName = `${user.first_name} ${user.middle_name} ${user.last_name}`;
+        setAvatarProps(generateAvatar(fullName));
+      } else {
+        // Update user with avatar from mapping
+        const updatedUser = {...user, avatar: avatarFromMapping};
+        setCurrentUser(updatedUser);
+        sessionStorage.setItem("currentUser", JSON.stringify(updatedUser));
+      }
+    }
+  }, []);
+
   const handleLogoClick = () => {
-    navigate("/sections"); // Navigates to startup page
+    navigate("/");
   };
 
   const toggleDropdown = () => {
@@ -38,11 +67,34 @@ const Header = ({ toggleSidebar }) => {
   };
 
   const handleSignOut = () => {
-    // Add your logout logic here
+    sessionStorage.removeItem("currentUser");
+    setCurrentUser(null);
+    setAvatarProps(null);
     console.log("Signing out...");
-    navigate("/"); 
+    navigate("/");
     setIsDropdownOpen(false);
   };
+
+  // ✅ Fallback if no user
+  if (!currentUser) {
+    return (
+      <header className="app-header">
+        <div className="header-left">
+          <button className="menu-btn" onClick={toggleSidebar}>
+            <GiHamburgerMenu className="menu-icon" />
+          </button>
+          <div className="header-logo">
+            <div className="header-logo-container" onClick={handleLogoClick}>
+              <img src={logo} className="logo-w-text" alt="Logo" />
+            </div>
+          </div>
+        </div>
+        <div className="header-right">
+          <span className="profile-placeholder">Loading...</span>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="app-header">
@@ -61,7 +113,22 @@ const Header = ({ toggleSidebar }) => {
       <div className="header-right" ref={dropdownRef}>
         <button className="profile-btn" onClick={toggleDropdown}>
           <div className="profile-icon-wrapper">
-            <FaUserCircle className="profile-main-icon" />
+            {currentUser.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt="Profile"
+                className="header-profile-avatar-img"
+              />
+            ) : avatarProps ? (
+              <div 
+                className="generated-avatar"
+                style={{ backgroundColor: avatarProps.color }}
+              >
+                {avatarProps.initials}
+              </div>
+            ) : (
+              <FaUserCircle className="profile-main-icon" />
+            )}
             <IoChevronDownCircle className="profile-sub-icon" />
           </div>
         </button>
@@ -69,21 +136,35 @@ const Header = ({ toggleSidebar }) => {
         {isDropdownOpen && (
           <div className="profile-dropdown">
             <div className="profile-info">
-              <FaUserCircle className="profile-avatar" />
-              <div className="profile-details">
-                <strong>Juan D Cruz</strong>
-                <div className="profile-email">juandcruz@gmail.com</div>
-                <div className="profile-id">2023-00***-01</div>
+              {currentUser.avatar ? (
+                <img
+                  src={currentUser.avatar}
+                  alt="Profile"
+                  className="header-profile-avatar-img dropdown-avatar"
+                />
+              ) : avatarProps ? (
+                <div 
+                  className="generated-avatar dropdown-avatar-generated"
+                  style={{ backgroundColor: avatarProps.color }}
+                >
+                  {avatarProps.initials}
+                </div>
+              ) : (
+                <FaUserCircle className="header-profile-avatar" />
+              )}
+              <div className="header-profile-details">
+                <strong>{currentUser.first_name} {currentUser.middle_name} {currentUser.last_name}</strong>
+                <div className="profile-email">{currentUser.email}</div>
               </div>
             </div>
             <hr />
             <button className="dropdown-item" onClick={handleViewAccount}>
-              <FaUser /> {/* 👈 simple profile icon */} 
+              <FaUser />
               View account
             </button>
             <hr />
             <button className="dropdown-item" onClick={handleSignOut}>
-              <FaSignOutAlt /> {/* 👈 sign-out arrow */}
+              <FaSignOutAlt />
               Sign out
             </button>
           </div>

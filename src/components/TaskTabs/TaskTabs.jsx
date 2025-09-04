@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import "./TaskTabs.css";
 
 const TaskTabs = ({
@@ -10,13 +10,18 @@ const TaskTabs = ({
   showCompletedIndicator = false,
 }) => {
   const location = useLocation();
+  const { sectionId } = useParams(); // Get the actual section ID from URL params
   const [indicatorStyle, setIndicatorStyle] = useState({
     width: 0,
     transform: "translateX(0px)",
   });
   const tabsRef = useRef({});
 
-  const isActive = (path) => location.pathname === path;
+  // Update the isActive function to use the actual sectionId
+  const isActive = (path) => {
+    // For exact matching with the current location
+    return location.pathname === `/sections/${sectionId}/task/${path}`;
+  };
 
   useEffect(() => {
     const activePath = location.pathname;
@@ -27,15 +32,15 @@ const TaskTabs = ({
         transform: `translateX(${activeEl.offsetLeft}px)`,
       });
     }
-  }, [location.pathname]);
+  }, [location.pathname, sectionId]); // Add sectionId as dependency
 
   return (
     <div className="task-tabs-container">
       <div className="task-tabs">
         <Link
-          ref={(el) => (tabsRef.current["/task/ongoing"] = el)}
-          to="/task/ongoing"
-          className={`task-tab ${isActive("/task/ongoing") ? "active" : ""}`}
+          ref={(el) => (tabsRef.current[`/sections/${sectionId}/task/ongoing`] = el)}
+          to={`/sections/${sectionId}/task/ongoing`}
+          className={`task-tab ${isActive("ongoing") ? "active" : ""}`}
         >
           Ongoing
           {showUpcomingIndicator && (
@@ -43,9 +48,9 @@ const TaskTabs = ({
           )}
         </Link>
         <Link
-          ref={(el) => (tabsRef.current["/task/incomplete"] = el)}
-          to="/task/incomplete"
-          className={`task-tab ${isActive("/task/incomplete") ? "active" : ""}`}
+          ref={(el) => (tabsRef.current[`/sections/${sectionId}/task/incomplete`] = el)}
+          to={`/sections/${sectionId}/task/incomplete`}
+          className={`task-tab ${isActive("incomplete") ? "active" : ""}`}
         >
           Incomplete
           {showPastDueIndicator && (
@@ -53,9 +58,9 @@ const TaskTabs = ({
           )}
         </Link>
         <Link
-          ref={(el) => (tabsRef.current["/task/history"] = el)}
-          to="/task/history"
-          className={`task-tab ${isActive("/task/history") ? "active" : ""}`}
+          ref={(el) => (tabsRef.current[`/sections/${sectionId}/task/history`] = el)}
+          to={`/sections/${sectionId}/task/history`}
+          className={`task-tab ${isActive("history") ? "active" : ""}`}
         >
           History
           {showCompletedIndicator && (

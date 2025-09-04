@@ -3,18 +3,37 @@ import { useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import "./FocalCard.css";
 import { FaUserCircle } from "react-icons/fa";
+import { createSlug } from "../../utils/idGenerator";
 
 const COLORS = ["#4CAF50", "#E53935", "#1E88E5"]; 
 
-const FocalCard = ({ section, name, role, stats, documents, sectionId, id }) => {
+const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
   const navigate = useNavigate();
+
+  const handleDocumentClick = (task) => {
+    navigate(`/task/${sectionId}/${createSlug(task.title)}`, {
+      state: {
+        taskData: task,
+        taskTitle: task.title,
+        deadline: task.deadline,
+        creation_date: task.creation_date,
+        taskDescription: task.description,
+        taskId: task.id,
+        creator_name: task.creator_name,
+        section_designation: task.section_designation,
+        section_name: task.sectionName,
+        full_name: task.creator_name,
+        task_status: task.task_status || "Ongoing"
+      }
+    });
+  };
 
   return (
     <div className="focal-card">
       {/* Header → fixed navigation path */}
       <div 
         className="focal-header" 
-        onClick={() => navigate(`/sections/${sectionId}/focals/ongoing`)}
+        onClick={() => navigate(`/sections/${sectionId}/task/ongoing`)}
       >
         <FaUserCircle className="focal-avatar" />
         <div>
@@ -61,7 +80,7 @@ const FocalCard = ({ section, name, role, stats, documents, sectionId, id }) => 
             <button 
               key={idx} 
               className="focal-document"
-              onClick={() => navigate(`/sections/${sectionId}/focals/${id}/documents/${doc.id}`)}
+              onClick={() => handleDocumentClick(doc)}
             >
               <div className="subject-title">{doc.title}</div>
               <div className="progress-wrapper">

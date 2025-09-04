@@ -7,14 +7,32 @@ import background from "../../assets/images/Start-Up.png";
 import ParticleBackground from "../../components/ParticleBackground/Particle2.jsx";
 import "../../components/ParticleBackground/Particle2.css";
 import logo from "../../assets/images/logo-w-text.png";
+import { AdminAccountData, loginAccounts } from "../../data/accountData"; // Update path
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/sections"); // Redirect to sections after login
+    setError("");
+    
+    // Check if email exists in loginAccounts
+    if (loginAccounts[email]) {
+      // Check if password matches (in real app, this would be hashed)
+      if (password === loginAccounts[email].password) {
+        // Store user in sessionStorage
+        sessionStorage.setItem("currentUser", JSON.stringify(loginAccounts[email]));
+        navigate("/sections"); // Redirect to sections after login
+      } else {
+        setError("Invalid password");
+      }
+    } else {
+      setError("No account found with this email");
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -22,7 +40,13 @@ const Login = () => {
   };
 
   const handleLogoClick = () => {
-    navigate("/login"); // Navigates to the home page
+    navigate("/login");
+  };
+
+  // Optional: Pre-fill with admin credentials for testing
+  const fillAdminCredentials = () => {
+    setEmail(AdminAccountData.email);
+    setPassword(AdminAccountData.password);
   };
 
   return (
@@ -40,9 +64,28 @@ const Login = () => {
               <p className="login-subtitle">
                 Please login or sign up to start your session.
               </p>
+              {/* Optional: Add button to pre-fill admin credentials for testing */}
+              <button 
+                type="button" 
+                className="fill-admin-btn"
+                onClick={fillAdminCredentials}
+                style={{
+                  marginTop: '10px',
+                  padding: '5px 10px',
+                  fontSize: '12px',
+                  backgroundColor: '#f0f0f0',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Use Admin Account
+              </button>
             </div>
 
             <form className="login-form" onSubmit={handleSubmit}>
+              {error && <div className="login-error">{error}</div>}
+              
               <div className="login-form-group">
                 <label htmlFor="email" className="login-form-label">
                   Email
@@ -53,6 +96,8 @@ const Login = () => {
                     id="email"
                     className="login-form-input"
                     placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -68,6 +113,8 @@ const Login = () => {
                     id="password"
                     className="login-form-input"
                     placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                   <button

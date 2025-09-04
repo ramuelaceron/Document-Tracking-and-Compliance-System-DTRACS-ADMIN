@@ -16,6 +16,10 @@
   padding: 16px;
 }
 
+.focal-header:hover{
+  text-decoration: underline;
+}
+
 .focal-avatar {
   font-size: 48px;
   margin-right: 12px;

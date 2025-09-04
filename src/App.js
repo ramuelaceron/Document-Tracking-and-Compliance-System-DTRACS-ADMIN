@@ -26,13 +26,13 @@ function App() {
         <Route path="/sections" element={<Dashboard />} />
         <Route path="/sections/:sectionId" element={<SectionPage />} />
 
-        <Route path="/sections/:sectionId/focals/" element={<TaskPage />} >
+        <Route path="/sections/:sectionId/task/" element={<TaskPage />} >
           <Route path="ongoing" element={<TaskOngoing />} />
           <Route path="incomplete" element={<TaskIncomplete />} />
           <Route path="history" element={<TaskHistory />} /> 
         </Route>
 
-        <Route path="/sections/:sectionId/focals/:focalId/documents/:taskId" element={<TaskDetailPage />} />
+        <Route path="/task/:sectionId/:taskSlug" element={<TaskDetailPage />} />
 
         <Route path="/registered-schools" element={<RegisteredSchools />} />
         <Route path="/schools/:schoolSlug" element={<SchoolAccDisplay />} />
