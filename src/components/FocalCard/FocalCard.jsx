@@ -6,15 +6,15 @@ import { FaUserCircle } from "react-icons/fa";
 
 const COLORS = ["#4CAF50", "#E53935", "#1E88E5"]; 
 
-const FocalCard = ({ section, name, role, stats, documents, sectionId, taskId, id}) => {
+const FocalCard = ({ section, name, role, stats, documents, sectionId, id }) => {
   const navigate = useNavigate();
 
   return (
     <div className="focal-card">
-      {/* Header → whole header is clickable */}
+      {/* Header → fixed navigation path */}
       <div 
         className="focal-header" 
-        onClick={() => navigate(`/sections/${sectionId}/focals/${id}`)}
+        onClick={() => navigate(`/sections/${sectionId}/focals/ongoing`)}
       >
         <FaUserCircle className="focal-avatar" />
         <div>
@@ -61,7 +61,7 @@ const FocalCard = ({ section, name, role, stats, documents, sectionId, taskId, i
             <button 
               key={idx} 
               className="focal-document"
-              onClick={() => navigate(`/sections/${sectionId}/focals/${id}/documents/${taskId || doc.id}`)}
+              onClick={() => navigate(`/sections/${sectionId}/focals/${id}/documents/${doc.id}`)}
             >
               <div className="subject-title">{doc.title}</div>
               <div className="progress-wrapper">

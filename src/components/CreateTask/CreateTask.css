@@ -1,0 +1,76 @@
+/* src/components/CreateTask/CreateTask.css */
+
+.create-task-btn {
+  /* Default: Circle Only */
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+  border: none;
+
+  /* Smooth transition for width, background, and text */
+  transition: 
+    width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+  
+  min-width: 48px;
+  margin-left: 4px;
+}
+
+/* Plus Icon - Fixed in place (center of 48px) */
+.plus-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px; /* Fixed position — center of 48px circle */
+  transform: translateY(-50%);
+  color: #000;
+  font-size: 24px;
+  transition: color 0.3s ease;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Create Text - Hidden by default */
+.create-text {
+  position: absolute;
+  left: 56px; /* Start just outside the 48px circle */
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 21px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+/* Hover: Expand to 144px */
+.create-task-btn:hover {
+  width: 144px;
+  background-color: #203061;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Show text on hover */
+.create-task-btn:hover .create-text {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Change + to white on hover */
+.create-task-btn:hover .plus-icon {
+  color: white;
+}
