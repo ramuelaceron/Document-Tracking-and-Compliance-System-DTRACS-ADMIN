@@ -10,76 +10,12 @@ import ConfirmDelete from "../../components/AccountControlComponents/AccountModa
 // Utils - Import the icon generator functions
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 
+// Controller - Import mock data and functions
+import { initialMockAccounts, sections, getFilteredAccounts } from "../../data/accountControl";
+
 // Toastify
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Mock data - moved outside component to avoid re-initialization
-const initialMockAccounts = {
-  verification: [
-    {
-      id: 1,
-      name: "Juan Dela Cruz",
-      type: "School",
-      school: "Binan Integrated HS",
-      email: "example@deped.edu.ph",
-      phone: "+63 9123456789",
-      address: "Purok 3 Brgy. Sto. Tomas, Biñan City, Laguna, 4024",
-    },
-    {
-      id: 2,
-      name: "Maria Santos",
-      type: "Focal",
-      email: "maria@deped.edu.ph",
-      phone: "+63 9234567890",
-      address: "San Antonio HS",
-    },
-    {
-      id: 3,
-      name: "Pedro Ramos",
-      type: "School",
-      school: "San Antonio HS",
-      email: "pedro@deped.edu.ph",
-      phone: "+63 9345678901",
-      address: "San Antonio HS",
-    },
-    {
-      id: 4,
-      name: "Ana Cruz",
-      type: "Focal",
-      email: "ana@deped.edu.ph",
-      phone: "+63 9456789012",
-      address: "Focal Office",
-    },
-  ],
-  termination: [
-    { id: 5, name: "Tedro Reyes", school: "Binan Integrated HS", type: "School" },
-    { id: 6, name: "Ana Cruz", school: "San Antonio HS", type: "Focal" },
-  ],
-  designation: [
-    { id: 7, name: "Isidra L. Galman", section: "School Management & Evaluation Section" },
-    { id: 8, name: "Edward R. Manuel", section: "Planning & Research Section" },
-    { id: 9, name: "Charles M. Patio", section: "Planning & Research Section" },
-    { id: 10, name: "Artnafe N. Ode", section: "Planning & Research Section" },
-    { id: 11, name: "Arletta P. Alora", section: "Human Resource Development Section" },
-    { id: 12, name: "Mary Joy L. Cabiles", section: "Human Resource Development Section" },
-    { id: 13, name: "Donna Jane M. Alfonso", section: "Social Mobilization and Networking Section" },
-    { id: 14, name: "Eva Joyce V. Cabantog", section: "Social Mobilization and Networking Section" },
-    { id: 15, name: "Precious Joy A. Coronado", section: "Education Facilities Section" },
-  ],
-};
-
-// Mock sections for dropdown
-const sections = [
-  "School Management & Evaluation Section",
-  "Planning & Research Section",
-  "Human Resource Development Section",
-  "Social Mobilization and Networking Section",
-  "Education Facilities Section",
-  "Disaster Risk Reduction and Management",
-  "School Health",
-  "Youth Formation",
-];
 
 const AccountControl = () => {
   const [activeTab, setActiveTab] = useState("verification");
@@ -90,7 +26,7 @@ const AccountControl = () => {
   const [accountToDelete, setAccountToDelete] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editedSection, setEditedSection] = useState({});
-  const [accountsData, setAccountsData] = useState(initialMockAccounts); // Use state for accounts data
+  const [accountsData, setAccountsData] = useState(initialMockAccounts);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -163,15 +99,8 @@ const AccountControl = () => {
     }));
   };
 
-  // Pick account based on tab - use the state data
-  let accounts = accountsData[activeTab] || [];
-
-  // Apply filter for verification & termination
-  if (activeTab === "verification" || activeTab === "termination") {
-    if (sortFilter !== "All") {
-      accounts = accounts.filter((acc) => acc.type === sortFilter);
-    }
-  }
+  // Get filtered accounts using the controller function
+  const accounts = getFilteredAccounts(accountsData, activeTab, sortFilter);
 
   return (
     <div className="account-control">
@@ -230,7 +159,7 @@ const AccountControl = () => {
                     ))}
                   </select>
                 ) : (
-                  acc.section // This will now show the updated section
+                  acc.section
                 )}
               </div>
             )}
@@ -260,7 +189,7 @@ const AccountControl = () => {
                       <button
                         className="save-btn"
                         onClick={() => handleSaveClick(acc.id)}
-                        disabled={!editedSection[acc.id]} // Disable if no section selected
+                        disabled={!editedSection[acc.id]}
                       >
                         Save
                       </button>
