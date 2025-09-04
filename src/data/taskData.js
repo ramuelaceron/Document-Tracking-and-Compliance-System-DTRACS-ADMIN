@@ -64,8 +64,9 @@ export const taskData = {
             {
               school_id: "SCHOOL-0001",
               account_name: "Jestro Diaz",
+              email: "jestro@gmail.com",
               avatar: "",
-              message: "Ang baho mo"
+              message: "Hello!"
             },
         ],
           modified_date: "", 
@@ -133,9 +134,11 @@ export const taskData = {
           attachment: [
             "string"
           ],
-          comments: [{
+          comments: [
+            {
 
-          }],
+            },
+          ],
           modified_date: "", 
         },
       ],

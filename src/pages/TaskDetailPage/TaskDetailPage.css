@@ -57,3 +57,76 @@
   color: #333;
   font-size: 18px;
 }
+
+/* Comments Toggle Section */
+.comments-toggle-section {
+  margin-top: 1.5rem;
+  padding: 0 1.5rem;
+}
+
+.comments-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.comments-toggle-btn:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.comments-toggle-btn .icon-md {
+  font-size: 1.1rem;
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 1.5rem;
+}
+
+/* No Comments Message */
+.no-comments-message {
+  padding: 1.5rem;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.no-comments-message p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* Comments Toggle Section */
+.comments-toggle-section {
+  margin-bottom: 1rem;
+  padding: 0 1.5rem;
+}
+
+.comments-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.comments-toggle-btn:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.comments-toggle-btn .icon-md {
+  font-size: 1.1rem;
+}
