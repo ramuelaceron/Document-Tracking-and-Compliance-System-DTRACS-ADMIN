@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SchoolStats.css";
 import { IoMdCheckmark } from "react-icons/io";
+import schoolLogo from "../../../assets/images/Start-Up.png"
 
 // Import taskData and schoolAccounts
 import { taskData } from "../../../data/taskData";

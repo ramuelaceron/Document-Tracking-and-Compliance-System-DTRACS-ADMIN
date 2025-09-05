@@ -6,16 +6,18 @@
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 10px;
   margin-left: 20px;
+  position: relative;
 }
 
 .task-tabs {
   display: flex;
   gap: 20px;
+  align-items: center; /* Ensure vertical alignment */
 }
 
 /* Tab Link Base Style */
 .task-tab {
-  padding: 10px 0;
+  padding: 5px 0;
   color: #003366;
   font-size: 15px;
   cursor: pointer;
@@ -49,6 +51,27 @@
   color: #003366;
 }
 
+/* Back button styled to match tabs */
+.task-tab-back {
+  padding: 5px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #003366;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s ease;
+  position: relative;
+  text-decoration: none;
+  margin-right: 10px; /* Add some spacing between back button and tabs */
+}
+
+.task-tab-back:hover {
+  color: #003366;
+}
+
 .task-indicator {
   position: absolute;
   top: 8px;
@@ -79,4 +102,8 @@
   background-position: right 10px center;
   background-size: 16px 16px;
   padding-right: 36px; /* Make room for custom arrow */
+}
+
+.icon-md {
+font-size: 20px;
 }

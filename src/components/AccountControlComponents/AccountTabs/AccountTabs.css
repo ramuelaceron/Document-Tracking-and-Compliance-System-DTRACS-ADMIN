@@ -40,15 +40,3 @@
   color: #003366;
   /* No ::after underline */
 }
-
-/* Persistent underline: always visible, jumps instantly */
-.tab-underline {
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  height: 2px;
-  background-color: #003366;
-  border-radius: 1px;
-  /* No transition = instant jump */
-  /* width and transform are controlled by JS */
-}

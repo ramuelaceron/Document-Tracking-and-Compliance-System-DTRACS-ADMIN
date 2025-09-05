@@ -24,8 +24,8 @@ const Header = ({ toggleSidebar }) => {
       
       // Try to get avatar from userAvatars mapping
       const avatarFromMapping = userAvatars[user.email] || 
-                               userAvatars[`${user.first_name} ${user.last_name}`.toLowerCase()] ||
-                               userAvatars[`${user.first_name} ${user.middle_name} ${user.last_name}`.toLowerCase()];
+                                userAvatars[`${user.first_name} ${user.last_name}`.toLowerCase()] ||
+                                userAvatars[`${user.first_name} ${user.middle_name} ${user.last_name}`.toLowerCase()];
       
       // If no avatar found in mapping, generate one
       if (!avatarFromMapping) {
@@ -41,7 +41,7 @@ const Header = ({ toggleSidebar }) => {
   }, []);
 
   const handleLogoClick = () => {
-    navigate("/");
+    navigate("/sections");
   };
 
   const toggleDropdown = () => {

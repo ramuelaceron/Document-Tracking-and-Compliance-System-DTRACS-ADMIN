@@ -52,9 +52,6 @@ const AccountTabs = ({ onTabChange }) => {
         >
           Designation
         </button>
-
-        {/* Persistent underline — always rendered, never hidden */}
-        <span className="tab-underline" style={indicatorStyle}></span>
       </div>
     </div>
   );
