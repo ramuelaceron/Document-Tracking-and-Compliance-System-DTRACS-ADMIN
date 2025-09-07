@@ -12,6 +12,9 @@ import TaskDetailPage from "./pages/TaskDetailPage/TaskDetailPage"
 import TaskOngoing from "./pages/Task/TaskOngoing/TaskOngoing";
 import TaskIncomplete from "./pages/Task/TaskIncomplete/TaskIncomplete";
 import TaskHistory from "./pages/Task/TaskHistory/TaskHistory";
+import VerificationPage from "./pages/AccountControl/VerificationPage";
+import TerminationPage from "./pages/AccountControl/TerminationPage";
+import DesignationPage from "./pages/AccountControl/DesignationPage";
 
 
 function App() {
@@ -36,7 +39,12 @@ function App() {
 
         <Route path="/registered-schools" element={<RegisteredSchools />} />
         <Route path="/schools/:schoolSlug" element={<SchoolAccDisplay />} />
-        <Route path="/account-control" element={<AccountControl />} />
+        <Route path="/account-control" element={<AccountControl />}>
+          <Route index element={<Navigate to="verification" replace />} />
+          <Route path="verification" element={<VerificationPage />} />
+          <Route path="terminate" element={<TerminationPage />} />
+          <Route path="designation" element={<DesignationPage />} />
+        </Route>
       </Route>
 
     </Routes>

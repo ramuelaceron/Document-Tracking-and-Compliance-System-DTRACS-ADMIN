@@ -1,12 +1,12 @@
+// src/components/Header/Header.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import { GiHamburgerMenu } from "react-icons/gi";
 import logo from "../../assets/images/logo-w-text.png";
-import { FaUser, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
+import { FaUser, FaSignOutAlt } from "react-icons/fa";
 import { IoChevronDownCircle } from "react-icons/io5";
 import { generateAvatar } from "../../utils/iconGenerator";
-import { userAvatars } from "../../data/accountData"; // Update path
 
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
@@ -15,29 +15,44 @@ const Header = ({ toggleSidebar }) => {
   const [avatarProps, setAvatarProps] = useState(null);
   const dropdownRef = useRef(null);
 
-  // ✅ Load user from sessionStorage on mount
+  // ✅ Parse full_name into first/middle/last name and generate avatar
   useEffect(() => {
     const savedUser = sessionStorage.getItem("currentUser");
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setCurrentUser(user);
-      
-      // Try to get avatar from userAvatars mapping
-      const avatarFromMapping = userAvatars[user.email] || 
-                               userAvatars[`${user.first_name} ${user.last_name}`.toLowerCase()] ||
-                               userAvatars[`${user.first_name} ${user.middle_name} ${user.last_name}`.toLowerCase()];
-      
-      // If no avatar found in mapping, generate one
-      if (!avatarFromMapping) {
-        const fullName = `${user.first_name} ${user.middle_name} ${user.last_name}`;
-        setAvatarProps(generateAvatar(fullName));
-      } else {
-        // Update user with avatar from mapping
-        const updatedUser = {...user, avatar: avatarFromMapping};
-        setCurrentUser(updatedUser);
-        sessionStorage.setItem("currentUser", JSON.stringify(updatedUser));
+    if (!savedUser) return;
+
+    let user = JSON.parse(savedUser);
+
+    // 🔄 Parse full_name if structured names are missing
+    if (user.full_name && !user.first_name) {
+      const nameParts = user.full_name.split(", ");
+      if (nameParts.length === 2) {
+        const lastName = nameParts[0].trim();
+        const rest = nameParts[1].trim(); // e.g., "Bayani M."
+        const nameMatch = rest.match(/^(\S+)(?:\s+(\S+))?/); // First and optional middle
+        const firstName = nameMatch ? nameMatch[1] : rest;
+        const middleName = nameMatch && nameMatch[2] ? nameMatch[2] : "";
+
+        user = {
+          ...user,
+          first_name: firstName,
+          middle_name: middleName,
+          last_name: lastName,
+        };
+
+        // Save enhanced user back to session storage
+        sessionStorage.setItem("currentUser", JSON.stringify(user));
       }
     }
+
+    setCurrentUser(user);
+
+    // ✅ Generate avatar from full name
+    const displayName = `${user.first_name || ""} ${user.middle_name || ""} ${user.last_name || ""}`.trim() ||
+                        user.full_name ||
+                        user.email ||
+                        "Unknown";
+
+    setAvatarProps(generateAvatar(displayName));
   }, []);
 
   const handleLogoClick = () => {
@@ -70,12 +85,10 @@ const Header = ({ toggleSidebar }) => {
     sessionStorage.removeItem("currentUser");
     setCurrentUser(null);
     setAvatarProps(null);
-    console.log("Signing out...");
     navigate("/");
     setIsDropdownOpen(false);
   };
 
-  // ✅ Fallback if no user
   if (!currentUser) {
     return (
       <header className="app-header">
@@ -113,22 +126,13 @@ const Header = ({ toggleSidebar }) => {
       <div className="header-right" ref={dropdownRef}>
         <button className="profile-btn" onClick={toggleDropdown}>
           <div className="profile-icon-wrapper">
-            {currentUser.avatar ? (
-              <img
-                src={currentUser.avatar}
-                alt="Profile"
-                className="header-profile-avatar-img"
-              />
-            ) : avatarProps ? (
-              <div 
-                className="generated-avatar"
-                style={{ backgroundColor: avatarProps.color }}
-              >
-                {avatarProps.initials}
-              </div>
-            ) : (
-              <FaUserCircle className="profile-main-icon" />
-            )}
+            {/* Generated initials avatar */}
+            <div
+              className="generated-avatar"
+              style={{ backgroundColor: avatarProps?.color || "#555" }}
+            >
+              {avatarProps?.initials}
+            </div>
             <IoChevronDownCircle className="profile-sub-icon" />
           </div>
         </button>
@@ -136,36 +140,27 @@ const Header = ({ toggleSidebar }) => {
         {isDropdownOpen && (
           <div className="profile-dropdown">
             <div className="profile-info">
-              {currentUser.avatar ? (
-                <img
-                  src={currentUser.avatar}
-                  alt="Profile"
-                  className="header-profile-avatar-img dropdown-avatar"
-                />
-              ) : avatarProps ? (
-                <div 
-                  className="generated-avatar dropdown-avatar-generated"
-                  style={{ backgroundColor: avatarProps.color }}
-                >
-                  {avatarProps.initials}
-                </div>
-              ) : (
-                <FaUserCircle className="header-profile-avatar" />
-              )}
+              {/* Avatar in dropdown */}
+              <div
+                className="generated-avatar dropdown-avatar-generated"
+                style={{ backgroundColor: avatarProps?.color || "#555" }}
+              >
+                {avatarProps?.initials}
+              </div>
               <div className="header-profile-details">
-                <strong>{currentUser.first_name} {currentUser.middle_name} {currentUser.last_name}</strong>
+                <strong>
+                  {currentUser.first_name} {currentUser.middle_name} {currentUser.last_name}
+                </strong>
                 <div className="profile-email">{currentUser.email}</div>
               </div>
             </div>
             <hr />
             <button className="dropdown-item" onClick={handleViewAccount}>
-              <FaUser />
-              View account
+              <FaUser /> View account
             </button>
             <hr />
             <button className="dropdown-item" onClick={handleSignOut}>
-              <FaSignOutAlt />
-              Sign out
+              <FaSignOutAlt /> Sign out
             </button>
           </div>
         )}

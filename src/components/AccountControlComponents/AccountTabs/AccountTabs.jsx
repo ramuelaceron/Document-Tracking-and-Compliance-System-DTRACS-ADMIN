@@ -1,7 +1,8 @@
+// src/components/AccountControlComponents/AccountTabs/AccountTabs.jsx
 import React, { useState, useEffect, useRef } from "react";
 import "./AccountTabs.css";
 
-const AccountTabs = ({ onTabChange }) => {
+const AccountTabs = ({ activeTab: controlledTab, onTabChange, sortFilter, onSortChange }) => {
   const [activeTab, setActiveTab] = useState("verification");
   const [indicatorStyle, setIndicatorStyle] = useState({
     width: 0,
@@ -9,16 +10,18 @@ const AccountTabs = ({ onTabChange }) => {
   });
   const tabsRef = useRef({});
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    onTabChange(tab);
-  };
+  // Sync local activeTab if parent controls it
+  useEffect(() => {
+    if (controlledTab) {
+      setActiveTab(controlledTab);
+    }
+  }, [controlledTab]);
 
+  // Update indicator when activeTab changes
   useEffect(() => {
     const activePath = `/account/${activeTab}`;
     const activeEl = tabsRef.current[activePath];
     if (activeEl) {
-      // Set the underline to jump instantly to this tab
       setIndicatorStyle({
         width: activeEl.offsetWidth,
         transform: `translateX(${activeEl.offsetLeft}px)`,
@@ -26,9 +29,18 @@ const AccountTabs = ({ onTabChange }) => {
     }
   }, [activeTab]);
 
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    onTabChange(tab);
+  };
+
+  // Show filter only in Verification and Termination
+  const showFilter = activeTab === "verification" || activeTab === "termination";
+
   return (
     <div className="task-tabs-container">
       <div className="task-tabs">
+        {/* Tab Buttons */}
         <button
           ref={(el) => (tabsRef.current["/account/verification"] = el)}
           className={`task-tab ${activeTab === "verification" ? "active" : ""}`}
@@ -53,9 +65,23 @@ const AccountTabs = ({ onTabChange }) => {
           Designation
         </button>
 
-        {/* Persistent underline — always rendered, never hidden */}
+        {/* Persistent underline */}
         <span className="tab-underline" style={indicatorStyle}></span>
       </div>
+
+      {/* ✅ Moved outside wrapper, directly in container */}
+      {/* ✅ No extra div wrapper around select */}
+      {showFilter && (
+        <select
+          className="task-dropdown"
+          value={sortFilter}
+          onChange={onSortChange} // ✅ Direct event passed
+        >
+          <option value="All">All Accounts</option>
+          <option value="School">School</option>
+          <option value="Focal">Focals</option>
+        </select>
+      )}
     </div>
   );
 };

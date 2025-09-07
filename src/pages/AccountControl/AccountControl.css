@@ -1,4 +1,4 @@
-/* Base row - Use flex for all tabs for consistent height */
+
 .account-item {
   display: flex;
   justify-content: space-between;
@@ -45,6 +45,7 @@
   color: white;
   text-transform: uppercase;
   flex-shrink: 0;
+  margin-left: -30px;
 }
 
 .account-content {
@@ -83,6 +84,7 @@
   align-items: center;
   justify-content: center;
   max-width: 100%;
+  margin-top: 32px;
 }
 
 /* Dropdown select */
@@ -186,35 +188,6 @@
 .edit-actions {
   display: flex;
   gap: 8px;
-}
-
-/* Filter container */
-.account-filter {
-  margin: 16px 0 16px 20px;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.account-filter select {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.account-filter select:hover,
-.account-filter select:focus {
-  border-color: #203061;
-}
-
-/* List spacing */
-.account-list {
-  margin-top: 16px;
 }
 
 /* Responsive design */
