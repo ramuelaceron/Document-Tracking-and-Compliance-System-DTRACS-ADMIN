@@ -27,24 +27,11 @@
   outline: none;
   text-decoration: none;
   position: relative;
-  transition: color 0.3s ease;
 }
 
+/* Remove the ::after pseudo-element completely */
 .task-tab::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #003366;
-  transition: width 0.3s ease;
-  border-radius: 1px;
-}
-
-.task-tab:hover::after,
-.task-tab.active::after {
-  width: 100%;
+  display: none;
 }
 
 .task-tab.active {
@@ -59,6 +46,7 @@
   background-color: #003366;
   border-radius: 1px;
   z-index: 1;
+  transition: none; /* Remove any transition */
 }
 
 /* ✅ Match TaskTabs exactly */
