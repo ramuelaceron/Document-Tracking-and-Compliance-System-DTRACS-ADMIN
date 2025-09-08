@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://192.168.1.62:8000",
+  baseURL: "http://192.168.90.124:8000",
   timeout: 5000,
 });
 
@@ -12,6 +12,7 @@ api.interceptors.request.use(
     console.log("🚀 Request URL:", config.baseURL + config.url);
     return config;
   },
+  
   (error) => Promise.reject(error)
 );
 

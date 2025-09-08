@@ -1,11 +1,11 @@
 // src/pages/AccountControl/VerificationPage.jsx
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import VerificationModal from "../../components/AccountControlComponents/AccountModals/VerifyAccount/VerificationModal";
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 import { toast } from "react-toastify";
 
-const API_BASE_URL = "http://192.168.1.62:8000";
+const API_BASE_URL = "http://192.168.90.124:8000";
 
 const VerificationPage = () => {
   const { sortFilter } = useOutletContext();
@@ -17,52 +17,71 @@ const VerificationPage = () => {
   const fetchAccounts = async () => {
     setLoading(true);
     try {
-      let url;
-      if (sortFilter === "School") {
-        url = `${API_BASE_URL}/admin/school/account/request`;
-      } else if (sortFilter === "Focal") {
-        url = `${API_BASE_URL}/admin/focal/account/request`;
-      }
-
       if (sortFilter === "All") {
-        const [schoolRes, focalRes] = await Promise.all([
+        const [schoolResult, focalResult] = await Promise.allSettled([
           fetch(`${API_BASE_URL}/admin/school/account/request`),
           fetch(`${API_BASE_URL}/admin/focal/account/request`),
         ]);
 
-        if (!schoolRes.ok) throw new Error(`School request failed: ${schoolRes.status}`);
-        if (!focalRes.ok) throw new Error(`Focal request failed: ${focalRes.status}`);
+        let schoolAccounts = [];
+        let focalAccounts = [];
 
-        const schoolData = await schoolRes.json();
-        const focalData = await focalRes.json();
+        // Process School Accounts
+        if (schoolResult.status === "fulfilled" && schoolResult.value.ok) {
+          const data = await schoolResult.value.json();
+          schoolAccounts = (data || []).map((acc) => ({
+            ...acc,
+            type: "School",
+            id: acc.user_id, // ✅ Use user_id for React key and actions
+          }));
+        } else {
+          console.error("Failed to fetch school accounts:", schoolResult);
+          toast.error("⚠️ Could not load school accounts.");
+        }
 
-        const schoolAccounts = (schoolData?.data || []).map((acc) => ({
-          ...acc,
-          type: "School",
-          id: acc.id || acc.email,
-        }));
-
-        const focalAccounts = (focalData?.data || []).map((acc) => ({
-          ...acc,
-          type: "Focal",
-          id: acc.id || acc.email,
-        }));
+        // Process Focal Accounts
+        if (focalResult.status === "fulfilled" && focalResult.value.ok) {
+          const data = await focalResult.value.json();
+          focalAccounts = (data || []).map((acc) => ({
+            ...acc,
+            type: "Focal",
+            id: acc.user_id, // ✅ Use user_id for React key and actions
+          }));
+        } else {
+          console.error("Failed to fetch focal accounts:", focalResult);
+          toast.error("⚠️ Could not load focal accounts.");
+        }
 
         setAccounts([...schoolAccounts, ...focalAccounts]);
       } else {
+        let url;
+        if (sortFilter === "School") {
+          url = `${API_BASE_URL}/admin/school/account/request`;
+        } else if (sortFilter === "Focal") {
+          url = `${API_BASE_URL}/admin/focal/account/request`;
+        } else {
+          setAccounts([]);
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch(url);
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-        const data = await res.json();
-        const transformed = (data?.data || []).map((acc) => ({
+        if (!res.ok) {
+          throw new Error(`Request failed: ${res.status} ${res.statusText}`);
+        }
+
+        const data = await res.json(); // → Raw array, NOT { data: [...] }
+        const transformed = (data || []).map((acc) => ({
           ...acc,
           type: sortFilter,
-          id: acc.id || acc.email,
+          id: acc.user_id, // ✅ Critical
         }));
+
         setAccounts(transformed);
       }
     } catch (err) {
       console.error("Error fetching accounts:", err);
-      toast.error("Failed to load account requests. Check connection.");
+      toast.error("❌ Failed to load account requests. Check connection or backend logs.");
       setAccounts([]);
     } finally {
       setLoading(false);
@@ -84,16 +103,12 @@ const VerificationPage = () => {
   };
 
   const handleDeny = async () => {
-    if (!selectedAccount) {
-      toast.error("No account selected.");
+    if (!selectedAccount?.user_id) {
+      toast.error("❌ No valid account selected.");
       return;
     }
 
     const userId = selectedAccount.user_id;
-    if (!userId) {
-      toast.error("Account has no user_id.");
-      return;
-    }
 
     try {
       const response = await fetch(
@@ -115,7 +130,7 @@ const VerificationPage = () => {
         throw new Error(data.message || `HTTP ${response.status}: Failed to deny account`);
       }
 
-      toast.warn(`${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
+      toast.warn(`🗑️ ${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
       setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
       setTimeout(handleCloseModal, 100);
     } catch (err) {
@@ -125,16 +140,12 @@ const VerificationPage = () => {
   };
 
   const handleVerify = async () => {
-    if (!selectedAccount) {
-      toast.error("No account selected.");
+    if (!selectedAccount?.user_id) {
+      toast.error("❌ No valid account selected.");
       return;
     }
 
     const userId = selectedAccount.user_id;
-    if (!userId) {
-      toast.error("Account has no user_id.");
-      return;
-    }
 
     try {
       const response = await fetch(
@@ -173,9 +184,13 @@ const VerificationPage = () => {
     <>
       <div className="account-list">
         {loading ? (
-          <p className="loading"></p>
+          <p className="loading">Loading pending accounts...</p>
         ) : accounts.length === 0 ? (
-          <p className="no-accounts">No accounts found.</p>
+          <p className="no-accounts">
+            {sortFilter === "All"
+              ? "No pending school or focal accounts found."
+              : `No pending ${sortFilter.toLowerCase()} accounts found.`}
+          </p>
         ) : (
           accounts.map((acc) => (
             <div key={acc.id} className="account-item verification">
@@ -189,7 +204,9 @@ const VerificationPage = () => {
                 <div className="account-content">
                   <div className="account-name">{getDisplayName(acc)}</div>
                   <div className="account-meta">
-                    {acc.type === "School" ? acc.school_name || acc.school : "Focal"}
+                    {acc.type === "School"
+                      ? acc.school_name || acc.school || "Unnamed School"
+                      : acc.office || acc.department || "Focal Person"}
                   </div>
                 </div>
               </div>

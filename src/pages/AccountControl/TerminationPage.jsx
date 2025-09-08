@@ -5,7 +5,7 @@ import ConfirmDelete from "../../components/AccountControlComponents/AccountModa
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 import { toast } from "react-toastify";
 
-const API_BASE_URL = "http://192.168.1.62:8000";
+import {API_BASE_URL} from "../../api/api"
 
 const TerminationPage = () => {
   const { sortFilter } = useOutletContext(); // We don't use it here, but kept for consistency

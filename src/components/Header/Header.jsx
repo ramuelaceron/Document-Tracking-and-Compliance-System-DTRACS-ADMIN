@@ -15,45 +15,80 @@ const Header = ({ toggleSidebar }) => {
   const [avatarProps, setAvatarProps] = useState(null);
   const dropdownRef = useRef(null);
 
-  // ✅ Parse full_name into first/middle/last name and generate avatar
   useEffect(() => {
-    const savedUser = sessionStorage.getItem("currentUser");
-    if (!savedUser) return;
+    const loadUser = () => {
+      const savedUser = sessionStorage.getItem("currentUser");
 
-    let user = JSON.parse(savedUser);
-
-    // 🔄 Parse full_name if structured names are missing
-    if (user.full_name && !user.first_name) {
-      const nameParts = user.full_name.split(", ");
-      if (nameParts.length === 2) {
-        const lastName = nameParts[0].trim();
-        const rest = nameParts[1].trim(); // e.g., "Bayani M."
-        const nameMatch = rest.match(/^(\S+)(?:\s+(\S+))?/); // First and optional middle
-        const firstName = nameMatch ? nameMatch[1] : rest;
-        const middleName = nameMatch && nameMatch[2] ? nameMatch[2] : "";
-
-        user = {
-          ...user,
-          first_name: firstName,
-          middle_name: middleName,
-          last_name: lastName,
-        };
-
-        // Save enhanced user back to session storage
-        sessionStorage.setItem("currentUser", JSON.stringify(user));
+      if (!savedUser || savedUser === "undefined") {
+        console.warn("No valid currentUser found in sessionStorage. User may not be logged in.");
+        sessionStorage.removeItem("currentUser");
+        setCurrentUser(null);
+        setAvatarProps(null);
+        return;
       }
-    }
 
-    setCurrentUser(user);
+      let user;
+      try {
+        user = JSON.parse(savedUser);
+        if (!user || typeof user !== "object" || Array.isArray(user)) {
+          throw new Error("Parsed user is not a valid object");
+        }
+      } catch (err) {
+        console.error("Failed to parse currentUser from sessionStorage:", savedUser, err);
+        sessionStorage.removeItem("currentUser");
+        setCurrentUser(null);
+        setAvatarProps(null);
+        return;
+      }
 
-    // ✅ Generate avatar from full name
-    const displayName = `${user.first_name || ""} ${user.middle_name || ""} ${user.last_name || ""}`.trim() ||
-                        user.full_name ||
-                        user.email ||
-                        "Unknown";
+      // 🔄 Parse full_name into structured names if missing
+      if (user.full_name && !user.first_name) {
+        const nameParts = user.full_name.split(", ");
+        if (nameParts.length === 2) {
+          const lastName = nameParts[0].trim();
+          const rest = nameParts[1].trim();
+          const nameMatch = rest.match(/^(\S+)(?:\s+(\S+))?/);
+          const firstName = nameMatch ? nameMatch[1] : rest;
+          const middleName = nameMatch && nameMatch[2] ? nameMatch[2] : "";
 
-    setAvatarProps(generateAvatar(displayName));
-  }, []);
+          user = {
+            ...user,
+            first_name: firstName,
+            middle_name: middleName,
+            last_name: lastName,
+          };
+
+          sessionStorage.setItem("currentUser", JSON.stringify(user));
+        }
+      }
+
+      setCurrentUser(user);
+
+      const displayName =
+        `${user.first_name || ""} ${user.middle_name || ""} ${user.last_name || ""}`.trim() ||
+        user.full_name ||
+        user.email ||
+        "Unknown";
+
+      setAvatarProps(generateAvatar(displayName));
+    };
+
+    // ✅ Load user on mount
+    loadUser();
+
+    // ✅ Listen for sessionStorage changes (login/logout from other tabs or components)
+    const handleStorageChange = (e) => {
+      if (e.key === "currentUser") {
+        loadUser();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []); // Empty dependency — we handle updates via event
 
   const handleLogoClick = () => {
     navigate("/");
@@ -63,7 +98,6 @@ const Header = ({ toggleSidebar }) => {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -103,7 +137,7 @@ const Header = ({ toggleSidebar }) => {
           </div>
         </div>
         <div className="header-right">
-          <span className="profile-placeholder">Loading...</span>
+          <span className="profile-placeholder">Guest</span>
         </div>
       </header>
     );
@@ -122,16 +156,14 @@ const Header = ({ toggleSidebar }) => {
         </div>
       </div>
 
-      {/* Profile Dropdown */}
       <div className="header-right" ref={dropdownRef}>
         <button className="profile-btn" onClick={toggleDropdown}>
           <div className="profile-icon-wrapper">
-            {/* Generated initials avatar */}
             <div
               className="generated-avatar"
               style={{ backgroundColor: avatarProps?.color || "#555" }}
             >
-              {avatarProps?.initials}
+              {avatarProps?.initials || "?"}
             </div>
             <IoChevronDownCircle className="profile-sub-icon" />
           </div>
@@ -140,16 +172,21 @@ const Header = ({ toggleSidebar }) => {
         {isDropdownOpen && (
           <div className="profile-dropdown">
             <div className="profile-info">
-              {/* Avatar in dropdown */}
               <div
                 className="generated-avatar dropdown-avatar-generated"
                 style={{ backgroundColor: avatarProps?.color || "#555" }}
               >
-                {avatarProps?.initials}
+                {avatarProps?.initials || "?"}
               </div>
               <div className="header-profile-details">
                 <strong>
-                  {currentUser.first_name} {currentUser.middle_name} {currentUser.last_name}
+                  {[
+                    currentUser.first_name,
+                    currentUser.middle_name,
+                    currentUser.last_name,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                 </strong>
                 <div className="profile-email">{currentUser.email}</div>
               </div>

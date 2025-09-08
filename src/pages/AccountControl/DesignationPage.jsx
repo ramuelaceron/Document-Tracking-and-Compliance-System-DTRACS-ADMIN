@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 
-const API_BASE_URL = "http://192.168.1.62:8000";
+import {API_BASE_URL} from "../../api/api"
 
 const SECTIONS = [
   "School Management & Evaluation Section",

@@ -11,8 +11,7 @@ import logo from "../../assets/images/logo-w-text.png";
 // Optional: Keep AdminAccountData for testing
 import { AdminAccountData } from "../../data/accountData";
 
-// 🔥 Replace with your actual backend base URL
-const API_BASE_URL = "http://192.168.1.62:8000"; // Change if different
+import {API_BASE_URL} from "../../api/api"
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -52,7 +51,7 @@ const Login = () => {
 
       // ✅ Login successful
       // Store user data in sessionStorage
-      sessionStorage.setItem("currentUser", JSON.stringify(data.data));
+      sessionStorage.setItem("currentUser", JSON.stringify(data));
 
       // Redirect to sections
       navigate("/sections");
@@ -94,15 +93,6 @@ const Login = () => {
             <p className="login-subtitle">
               Please login to start your session.
             </p>
-
-            {/* 🔧 Optional: Remove in production */}
-            {/* <button
-              type="button"
-              onClick={fillAdminCredentials}
-              style={{ fontSize: "12px", color: "gray" }}
-            >
-              Fill Admin Credentials (Dev)
-            </button> */}
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>
