@@ -34,9 +34,6 @@ const TerminationPage = () => {
             type: "School",
             id: acc.user_id, // ✅ Use user_id for React key and deletion
           }));
-        } else {
-          console.error("Failed to fetch verified school accounts:", schoolResult);
-          toast.info("No verified school accounts available.");
         }
 
         // Process Focal Accounts
@@ -48,9 +45,8 @@ const TerminationPage = () => {
             id: acc.user_id, // ✅ Use user_id for React key and deletion
           }));
         } else {
-          console.error("Failed to fetch verified focal accounts:", focalResult);
-          toast.info("No verified focal accounts available.");
         }
+        
       } else if (sortFilter === "School") {
         const schoolRes = await fetch(`${API_BASE_URL}/admin/school/verified/accounts`);
         if (!schoolRes.ok) throw new Error(`Failed to fetch verified schools: ${schoolRes.status}`);

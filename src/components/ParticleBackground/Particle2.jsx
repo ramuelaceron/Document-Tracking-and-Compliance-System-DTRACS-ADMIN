@@ -1,129 +1,62 @@
+// src/components/ParticleBackground/Particle2.jsx
 import React from "react";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 
-const ParticleBackground = () => {
+const Particle2 = React.memo(() => {
   const particlesInit = async (engine) => {
     await loadSlim(engine);
   };
 
   return (
-    <div className="particle2-background">
-      <Particles
-        id="tsparticles"
-        init={particlesInit}
-        options={{
-          fullScreen: {
-            enable: true, // Disable fullscreen to respect container
-            zIndex: -1,
+    <Particles
+      id="particles-login"
+      init={particlesInit}
+      options={{
+        fullScreen: {
+          enable: true,
+          zIndex: -1, // behind everything
+        },
+        particles: {
+          number: {
+            value: 60,
+            density: { enable: true, value_area: 800 },
           },
-          particles: {
-            number: {
-              value: 60,
-              density: {
-                enable: true,
-                value_area: 800,
-              },
-            },
-            color: {
-              value: "#ffffffff",
-            },
-            shape: {
-              type: "circle",
-              stroke: {
-                width: 0,
-                color: "#000000",
-              },
-              polygon: {
-                nb_sides: 5,
-              },
-            },
-            opacity: {
-              value: 0.5,
-              random: false,
-              anim: {
-                enable: false,
-                speed: 1,
-                opacity_min: 0.1,
-                sync: false,
-              },
-            },
-            size: {
-              value: 3,
-              random: true,
-              anim: {
-                enable: false,
-                speed: 40,
-                size_min: 0.1,
-                sync: false,
-              },
-            },
-            line_linked: {
-              enable: true,
-              distance: 150,
-              color: "#ffffff",
-              opacity: 0.4,
-              width: 1,
-            },
-            move: {
-              enable: true,
-              speed: 2,
-              direction: "none",
-              random: false,
-              straight: false,
-              out_mode: "out",
-              bounce: false,
-              attract: {
-                enable: false,
-                rotateX: 600,
-                rotateY: 1200,
-              },
-            },
+          color: { value: "#ffffff" },
+          shape: { type: "circle" },
+          opacity: { value: 0.5 },
+          size: { value: 3, random: true },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: "#ffffff",
+            opacity: 0.4,
+            width: 1,
           },
-          interactivity: {
-            detect_on: "parent",
-            events: {
-              onhover: {
-                enable: true,
-                mode: "grab",
-              },
-              onclick: {
-                enable: true,
-                mode: "push",
-              },
-              resize: true,
-            },
-            modes: {
-              grab: {
-                distance: 140,
-                line_linked: {
-                  opacity: 1,
-                },
-              },
-              bubble: {
-                distance: 400,
-                size: 40,
-                duration: 2,
-                opacity: 8,
-                speed: 3,
-              },
-              repulse: {
-                distance: 200,
-                duration: 0.4,
-              },
-              push: {
-                particles_nb: 4,
-              },
-              remove: {
-                particles_nb: 2,
-              },
-            },
+          move: {
+            enable: true,
+            speed: 2,
+            direction: "none",
+            out_mode: "out",
+            bounce: false,
           },
-          retina_detect: true,
-        }}
-      />
-    </div>
+        },
+        interactivity: {
+          events: {
+            onhover: { enable: true, mode: "grab" },
+            onclick: { enable: true, mode: "push" }, // ✅ keep click spawn effect
+            resize: true,
+          },
+          modes: {
+            grab: { distance: 140, line_linked: { opacity: 1 } },
+            push: { particles_nb: 4 }, // ✅ unchanged
+            repulse: { distance: 200, duration: 0.4 },
+          },
+        },
+        retina_detect: true,
+      }}
+    />
   );
-};
+});
 
-export default ParticleBackground;
+export default Particle2;

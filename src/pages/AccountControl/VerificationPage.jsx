@@ -128,7 +128,7 @@ const VerificationPage = () => {
       throw new Error(data.message || `HTTP ${response.status}: Failed to deny account`);
     }
 
-    toast.warn(`🗑️ ${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
+    toast.warn(`${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
     setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
     setTimeout(handleCloseModal, 100);
   } catch (err) {

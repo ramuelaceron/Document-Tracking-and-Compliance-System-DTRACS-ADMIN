@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://prague-avenue-chronicle-mem.trycloudflare.com",
+  baseURL: "https://cloud-tomato-goal-sick.trycloudflare.com",
   timeout: 5000,
 });
 
