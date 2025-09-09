@@ -1,31 +1,32 @@
 
-.admin-schools-section {
+.admin-section {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 1200px;
   padding: 2rem 2rem;
-  padding-top: 20px;
+  padding-top: 4rem;
 }
 
-.schools-header {
+.school-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top:2.5rem;
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #B7B6B6;
 }
 
-.schools-title {
+.school-title {
   font-family: 'Roboto-Bold', Helvetica;
   font-size: 24px;
   font-weight: 700;
   color: #000000;
 }
 
-/* schools list container */
-.schools-list {
+/* School list container */
+.school-list {
   padding-top:-2.0rem;
   padding-left:2.5rem;
   display: flex;
@@ -33,35 +34,36 @@
   gap: 0.1rem;
 }
 
-.schools-info {
+.school-info {
   display: flex;
   align-items: center; 
   gap: 12px;          
 }
-
-/* Individual schools item */
-.schools-item {
+.schoolname{
+    padding-top:0.5rem;
+}
+/* Individual school item */
+.school-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start; /* Aligns both sides to the top */
   padding: 10px 0;
 }
 
-.schools-item:last-child {
+.school-item:last-child {
   border-bottom: none;
 }
 
-/* schools name */
-.schools-name {
+/* School name */
+.schoolname {
   font-family: 'Source Sans 3-Regular', Helvetica;
-  padding-top:0.5rem;
   font-size: 16px;
   font-weight: 500;
   color: #000;
   margin: 0;
 }
 
-.schools-icon {
+.school-icon {
   width: 30px;
   height: 30px;
   background-color: #f0f0f0;
@@ -73,7 +75,7 @@
   font-size: 12px;
 }
 
-.schools-logo {
+.school-logo {
   width: 50px;
   height: 50px;
   border-radius: 8px;
@@ -81,7 +83,7 @@
   flex-shrink: 0;
 }
 
-.schools-account-count {
+.account-count {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -90,20 +92,20 @@
   color: #757575;
 }
 
-.schools-account-image {
+.account-image {
   width: 14px;
   height: 14px;
   color: #757575;
   margin-right: 5px;
 }
 
-.schools-text {
+.school-text {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.schools-address {
+.school-address {
   font-family: 'Source Sans 3-Regular', Helvetica;
   font-size: 12px;
   color: #555;
@@ -111,7 +113,7 @@
   line-height: 1.3;
 }
 
-.schools-account-count-link {
+.account-count-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -122,16 +124,16 @@
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.schools-account-count-link:hover {
+.account-count-link:hover {
   color: #0056b3;
   cursor: pointer;
 }
 
-.schools-account-count-link:hover .schools-account-image {
+.account-count-link:hover .account-image {
   color: #0056b3;
 }
 
-.schools-account-count span:hover{
+.account-count span:hover{
   text-decoration: underline;
   color: #0056b3;
 }

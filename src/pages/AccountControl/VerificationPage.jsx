@@ -5,7 +5,7 @@ import VerificationModal from "../../components/AccountControlComponents/Account
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 import { toast } from "react-toastify";
 
-const API_BASE_URL = "https://infrastructure-albums-elegant-hughes.trycloudflare.com";
+import { API_BASE_URL } from "../../api/api";
 
 const VerificationPage = () => {
   const { sortFilter } = useOutletContext();
