@@ -5,7 +5,7 @@ import VerificationModal from "../../components/AccountControlComponents/Account
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 import { toast } from "react-toastify";
 
-const API_BASE_URL = "http://192.168.90.124:8000";
+const API_BASE_URL = "https://infrastructure-albums-elegant-hughes.trycloudflare.com";
 
 const VerificationPage = () => {
   const { sortFilter } = useOutletContext();
@@ -34,9 +34,6 @@ const VerificationPage = () => {
             type: "School",
             id: acc.user_id, // ✅ Use user_id for React key and actions
           }));
-        } else {
-          console.error("Failed to fetch school accounts:", schoolResult);
-          toast.error("⚠️ Could not load school accounts.");
         }
 
         // Process Focal Accounts
@@ -47,9 +44,6 @@ const VerificationPage = () => {
             type: "Focal",
             id: acc.user_id, // ✅ Use user_id for React key and actions
           }));
-        } else {
-          console.error("Failed to fetch focal accounts:", focalResult);
-          toast.error("⚠️ Could not load focal accounts.");
         }
 
         setAccounts([...schoolAccounts, ...focalAccounts]);
@@ -103,74 +97,79 @@ const VerificationPage = () => {
   };
 
   const handleDeny = async () => {
-    if (!selectedAccount?.user_id) {
-      toast.error("❌ No valid account selected.");
-      return;
+  if (!selectedAccount?.user_id) {
+    toast.error("❌ No valid account selected.");
+    return;
+  }
+
+  const userId = selectedAccount.user_id;
+  const isSchool = selectedAccount.type === "School";
+  const endpoint = isSchool
+    ? "/admin/school/request/delete/id/"
+    : "/admin/focal/request/delete/id/";
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userId)}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
+
+    let data = {};
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json();
     }
 
-    const userId = selectedAccount.user_id;
-
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/account/request-delete/user/${encodeURIComponent(userId)}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
-
-      let data = {};
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        data = await response.json();
-      }
-
-      if (!response.ok) {
-        throw new Error(data.message || `HTTP ${response.status}: Failed to deny account`);
-      }
-
-      toast.warn(`🗑️ ${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
-      setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
-      setTimeout(handleCloseModal, 100);
-    } catch (err) {
-      console.error("Deny failed:", err);
-      toast.error(`❌ Deny failed: ${err.message}`);
+    if (!response.ok) {
+      throw new Error(data.message || `HTTP ${response.status}: Failed to deny account`);
     }
-  };
+
+    toast.warn(`🗑️ ${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
+    setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
+    setTimeout(handleCloseModal, 100);
+  } catch (err) {
+    console.error("Deny failed:", err);
+    toast.error(`❌ Deny failed: ${err.message}`);
+  }
+};
 
   const handleVerify = async () => {
-    if (!selectedAccount?.user_id) {
-      toast.error("❌ No valid account selected.");
-      return;
-    }
+  if (!selectedAccount?.user_id) {
+    toast.error("❌ No valid account selected.");
+    return;
+  }
 
-    const userId = selectedAccount.user_id;
+  const userId = selectedAccount.user_id;
 
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/account/verification/user/${encodeURIComponent(userId)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Verification failed");
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/admin/account/verification?user_id=${encodeURIComponent(userId)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        // No body needed
       }
+    );
 
-      toast.success(`✅ Verified: ${getDisplayName(selectedAccount)}`);
-      setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
-      setTimeout(handleCloseModal, 100);
-    } catch (err) {
-      console.error("Verification failed:", err);
-      toast.error(`❌ ${err.message}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Verification failed");
     }
-  };
+
+    toast.success(`✅ Verified: ${getDisplayName(selectedAccount)}`);
+    setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
+    setTimeout(handleCloseModal, 100);
+  } catch (err) {
+    console.error("Verification failed:", err);
+    toast.error(`❌ ${err.message}`);
+  }
+};
 
   const getDisplayName = (acc) => {
     if (!acc) return "Unknown User";
@@ -184,7 +183,7 @@ const VerificationPage = () => {
     <>
       <div className="account-list">
         {loading ? (
-          <p className="loading">Loading pending accounts...</p>
+          <p className="loading"></p>
         ) : accounts.length === 0 ? (
           <p className="no-accounts">
             {sortFilter === "All"

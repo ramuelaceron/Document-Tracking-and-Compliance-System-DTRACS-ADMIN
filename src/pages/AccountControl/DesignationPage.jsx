@@ -4,17 +4,16 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 
-import {API_BASE_URL} from "../../api/api"
+import { API_BASE_URL } from "../../api/api";
 
 const SECTIONS = [
-  "School Management & Evaluation Section",
+  "School Management Monitoring and Evaluation Section",
   "Planning",
   "Research",
   "Human Resource Development Section",
   "Social Mobilization and Networking Section",
   "Education Facilities Section",
-  "Disaster Risk Reduction and Management",
-  "School Health",
+  "Disaster Risk Reduction and Management Unit",
   "Dental",
   "Medical",
   "School-Based Feeding Program",
@@ -26,7 +25,7 @@ const SECTIONS = [
 ];
 
 const DesignationPage = () => {
-  const { sortFilter } = useOutletContext(); // Not used, but for consistency
+  const { sortFilter } = useOutletContext();
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -44,10 +43,10 @@ const DesignationPage = () => {
       if (!res.ok) throw new Error(`Failed to fetch focal accounts: ${res.status}`);
 
       const data = await res.json();
-      const focalAccounts = (data?.data || []).map((acc) => ({
+      const focalAccounts = (data || []).map((acc) => ({
         ...acc,
         type: "Focal",
-        id: acc.user_id || acc.email,
+        id: acc.user_id,
         section: acc.section || "",
       }));
 
@@ -62,22 +61,49 @@ const DesignationPage = () => {
   };
 
   useEffect(() => {
-    fetchAccounts();
-  }, []);
+  const shouldShowSuccess = sessionStorage.getItem("showSectionUpdateSuccess");
 
-  const handleSaveClick = async (id) => {
+  fetchAccounts().then(() => {
+      if (shouldShowSuccess === "true") {
+        toast.success("✅ Section updated successfully!");
+        sessionStorage.removeItem("showSectionUpdateSuccess");
+      }
+    });
+    }, []);
+
+    const handleSaveClick = async (id) => {
     const newSection = editedSection[id];
     if (!newSection) {
       toast.error("Please select a section");
       return;
     }
 
-    // Optional: Save to backend here if API exists
-    setAccounts((prev) =>
-      prev.map((acc) => (acc.id === id ? { ...acc, section: newSection } : acc))
-    );
-    toast.success("Section updated!");
-    setEditingId(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/focal/designation/id/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          user_id: id,
+          designation: newSection,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `HTTP ${response.status}: Failed to update designation`);
+      }
+
+      // ✅ Set flag to show success toast AFTER reload + load
+      sessionStorage.setItem("showSectionUpdateSuccess", "true");
+      window.location.reload(); // Reload immediately
+
+    } catch (err) {
+      console.error("Failed to update designation:", err);
+      toast.error(`❌ ${err.message}`);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -104,7 +130,7 @@ const DesignationPage = () => {
       {loading ? (
         <p className="loading"></p>
       ) : accounts.length === 0 ? (
-        <p className="no-accounts">No accounts found.</p>
+        <p className="no-accounts">No verified focal accounts found.</p>
       ) : (
         accounts.map((acc) => (
           <div key={acc.id} className="account-item designation">
@@ -128,14 +154,14 @@ const DesignationPage = () => {
                   className="edit-select"
                 >
                   <option value="">Select a section</option>
-                  {SECTIONS.map((section) => (
-                    <option key={section} value={section}>
-                      {section}
+                  {SECTIONS.map((section_designation) => (
+                    <option key={section_designation} value={section_designation}>
+                      {section_designation}
                     </option>
                   ))}
                 </select>
               ) : (
-                <span>{acc.section || <em>Not assigned</em>}</span>
+                <span>{acc.section_designation || <em>Not assigned yet</em>}</span>
               )}
             </div>
 

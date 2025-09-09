@@ -5,104 +5,121 @@ import ConfirmDelete from "../../components/AccountControlComponents/AccountModa
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 import { toast } from "react-toastify";
 
-import {API_BASE_URL} from "../../api/api"
+import { API_BASE_URL } from "../../api/api";
 
 const TerminationPage = () => {
-  const { sortFilter } = useOutletContext(); // We don't use it here, but kept for consistency
+  const { sortFilter } = useOutletContext();
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchAccounts = async () => {
-  setLoading(true);
-  try {
-    let schoolAccounts = [];
-    let focalAccounts = [];
+    setLoading(true);
+    try {
+      let schoolAccounts = [];
+      let focalAccounts = [];
 
-    if (sortFilter === "All") {
-      const [schoolRes, focalRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/admin/school/verified/accounts`),
-        fetch(`${API_BASE_URL}/admin/focal/verified/accounts`),
-      ]);
+      if (sortFilter === "All") {
+        const [schoolResult, focalResult] = await Promise.allSettled([
+          fetch(`${API_BASE_URL}/admin/school/verified/accounts`),
+          fetch(`${API_BASE_URL}/admin/focal/verified/accounts`),
+        ]);
 
-      if (!schoolRes.ok) throw new Error(`Failed to fetch verified schools: ${schoolRes.status}`);
-      if (!focalRes.ok) throw new Error(`Failed to fetch verified focals: ${focalRes.status}`);
+        // Process School Accounts
+        if (schoolResult.status === "fulfilled" && schoolResult.value.ok) {
+          const data = await schoolResult.value.json();
+          schoolAccounts = (data || []).map((acc) => ({
+            ...acc,
+            type: "School",
+            id: acc.user_id, // ✅ Use user_id for React key and deletion
+          }));
+        } else {
+          console.error("Failed to fetch verified school accounts:", schoolResult);
+          toast.info("No verified school accounts available.");
+        }
 
-      const schoolData = await schoolRes.json();
-      const focalData = await focalRes.json();
+        // Process Focal Accounts
+        if (focalResult.status === "fulfilled" && focalResult.value.ok) {
+          const data = await focalResult.value.json();
+          focalAccounts = (data || []).map((acc) => ({
+            ...acc,
+            type: "Focal",
+            id: acc.user_id, // ✅ Use user_id for React key and deletion
+          }));
+        } else {
+          console.error("Failed to fetch verified focal accounts:", focalResult);
+          toast.info("No verified focal accounts available.");
+        }
+      } else if (sortFilter === "School") {
+        const schoolRes = await fetch(`${API_BASE_URL}/admin/school/verified/accounts`);
+        if (!schoolRes.ok) throw new Error(`Failed to fetch verified schools: ${schoolRes.status}`);
+        const data = await schoolRes.json();
+        schoolAccounts = (data || []).map((acc) => ({
+          ...acc,
+          type: "School",
+          id: acc.user_id,
+        }));
+      } else if (sortFilter === "Focal") {
+        const focalRes = await fetch(`${API_BASE_URL}/admin/focal/verified/accounts`);
+        if (!focalRes.ok) throw new Error(`Failed to fetch verified focals: ${focalRes.status}`);
+        const data = await focalRes.json();
+        focalAccounts = (data || []).map((acc) => ({
+          ...acc,
+          type: "Focal",
+          id: acc.user_id,
+        }));
+      }
 
-      schoolAccounts = (schoolData?.data || []).map((acc) => ({
-        ...acc,
-        type: "School",
-        id: acc.user_id || acc.email,
-      }));
-
-      focalAccounts = (focalData?.data || []).map((acc) => ({
-        ...acc,
-        type: "Focal",
-        id: acc.user_id || acc.email,
-      }));
-    } else if (sortFilter === "School") {
-      const schoolRes = await fetch(`${API_BASE_URL}/admin/school/verified/accounts`);
-      if (!schoolRes.ok) throw new Error(`Failed to fetch verified schools: ${schoolRes.status}`);
-      const schoolData = await schoolRes.json();
-      schoolAccounts = (schoolData?.data || []).map((acc) => ({
-        ...acc,
-        type: "School",
-        id: acc.user_id || acc.email,
-      }));
-    } else if (sortFilter === "Focal") {
-      const focalRes = await fetch(`${API_BASE_URL}/admin/focal/verified/accounts`);
-      if (!focalRes.ok) throw new Error(`Failed to fetch verified focals: ${focalRes.status}`);
-      const focalData = await focalRes.json();
-      focalAccounts = (focalData?.data || []).map((acc) => ({
-        ...acc,
-        type: "Focal",
-        id: acc.user_id || acc.email,
-      }));
+      setAccounts([...schoolAccounts, ...focalAccounts]);
+    } catch (err) {
+      console.error("Error fetching verified accounts:", err);
+      toast.error("❌ Failed to load verified accounts for termination.");
+      setAccounts([]);
+    } finally {
+      setLoading(false);
     }
-
-    setAccounts([...schoolAccounts, ...focalAccounts]);
-  } catch (err) {
-    console.error("Error fetching verified accounts:", err);
-    toast.error("Failed to load verified accounts for termination.");
-    setAccounts([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     fetchAccounts();
-  }, [sortFilter]); // ✅ Now it re-fetches when filter changes
+  }, [sortFilter]);
 
   const handleTerminateAccount = async () => {
-    if (!accountToDelete) return;
-
-    const userId = accountToDelete.user_id;
-    if (!userId) {
-      toast.error("Account has no user_id.");
+    if (!accountToDelete?.user_id) {
+      toast.error("❌ No valid account selected.");
       return;
     }
 
+    const userId = accountToDelete.user_id;
+    const isSchool = accountToDelete.type === "School";
+    const endpoint = isSchool
+      ? "/admin/school/verified/account/delete/id/"
+      : "/admin/focal/verified/account/delete/id/";
+
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/account/verified-delete/user/${encodeURIComponent(userId)}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const url = `${API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userId)}`;
+      console.log("Terminating account via:", url);
 
-      const data = await response.json();
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to terminate account");
+      let data = {};
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
       }
 
-      toast.error(`${getDisplayName(accountToDelete)} has been terminated.`);
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP ${response.status}: Failed to terminate account`);
+      }
+
+      toast.error(`${getDisplayName(accountToDelete)} has been deleted.`, {
+        autoClose: 3000,
+      });
       setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
     } catch (err) {
       console.error("Termination failed:", err);
@@ -127,7 +144,11 @@ const TerminationPage = () => {
         {loading ? (
           <p className="loading"></p>
         ) : accounts.length === 0 ? (
-          <p className="no-accounts">No accounts found.</p>
+          <p className="no-accounts">
+            {sortFilter === "All"
+              ? "No verified school or focal accounts found."
+              : `No verified ${sortFilter.toLowerCase()} accounts found.`}
+          </p>
         ) : (
           accounts.map((acc) => (
             <div key={acc.id} className="account-item termination">
@@ -141,7 +162,9 @@ const TerminationPage = () => {
                 <div className="account-content">
                   <div className="account-name">{getDisplayName(acc)}</div>
                   <div className="account-meta">
-                    {acc.type === "School" ? acc.school_name || acc.school : "Focal"}
+                    {acc.type === "School"
+                      ? acc.school_name || acc.school || "Unnamed School"
+                      : acc.office || acc.department || "Focal Person"}
                   </div>
                 </div>
               </div>
