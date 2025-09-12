@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { PiClipboardTextBold } from "react-icons/pi";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -39,6 +39,14 @@ const TaskIncomplete = () => {
   const [openGroups, setOpenGroups] = useState(() =>
     sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {})
   );
+
+  useEffect(() => {
+    if (sortedDates.length > 0 && Object.keys(openGroups).length === 0) {
+      setOpenGroups(sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {}));
+    }
+  }, [sortedDates, openGroups]);
+
+  
 
   const toggleGroup = (date) => {
     setOpenGroups((prev) => ({
@@ -94,7 +102,7 @@ const TaskIncomplete = () => {
                       const { total, completed } = getTaskCompletionStats(task);
                       
                       return (
-                        <div className="incomplete-task-item" key={task.id}>
+                        <div className="incomplete-task-item" key={task.task_id}>
                           <div className="incomplete-task-header">
                             <div className="incomplete-task-icon">
                               <PiClipboardTextBold className="icon-lg" />
@@ -127,7 +135,7 @@ const TaskIncomplete = () => {
                                 section_designation: task.section_designation,
                                 section_name: task.sectionName,
                                 full_name: task.creator_name,
-                                task_status: task.task_status || "Incomplete"
+                                task_status: task.task_status || "INCOMPLETE"
                               }}
                               className="incomplete-description-link"
                             >

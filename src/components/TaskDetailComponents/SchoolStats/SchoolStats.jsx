@@ -10,22 +10,22 @@ import { schoolAccounts } from "../../../data/schoolAccounts";
 
 // Status mapping
 const statusLabels = {
-  Completed: (
+  COMPLETE: (
     <span>
       <IoMdCheckmark size={14} /> Completed
     </span>
   ),
-  Ongoing: "Pending",
-  Incomplete: "Past Due",
+  ONGOING: "Pending",
+  INCOMPLETE: "Incomplete",
 };
 
 const getDisplayStatus = (status) => {
   switch (status) {
-    case "Completed":
+    case "COMPLETE":
       return "submitted";
-    case "Incomplete":
+    case "INCOMPLETE":
       return "past_due";
-    case "Ongoing":
+    case "ONGOING":
     default:
       return "not_submitted";
   }
@@ -112,12 +112,12 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
       // Determine overall school status based on account statuses
       const accountStatuses = school.accounts.map(acc => acc.status);
       
-      if (accountStatuses.every(status => status === "Completed")) {
-        school.status = "Completed";
-      } else if (accountStatuses.some(status => status === "Incomplete")) {
-        school.status = "Incomplete";
+      if (accountStatuses.every(status => status === "COMPLETE")) {
+        school.status = "COMPLETE";
+      } else if (accountStatuses.some(status => status === "INCOMPLETE")) {
+        school.status = "INCOMPLETE";
       } else {
-        school.status = "Ongoing";
+        school.status = "ONGOING";
       }
       
       return school;
@@ -127,9 +127,9 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
   // Calculate counts
   const counts = useMemo(() => {
     const assigned = schools.length;
-    const submitted = schools.filter((s) => s.status === "Completed").length;
+    const submitted = schools.filter((s) => s.status === "COMPLETE").length;
     const notSubmitted = schools.filter(
-      (s) => s.status === "Ongoing" || s.status === "Incomplete"
+      (s) => s.status === "ONGOING" || s.status === "INCOMPLETE"
     ).length;
 
     return { assigned, submitted, notSubmitted };
@@ -138,9 +138,9 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
   // Filter schools by tab
   const filteredSchools = useMemo(() => {
     if (activeTab === "assigned") return schools;
-    if (activeTab === "submitted") return schools.filter((s) => s.status === "Completed");
+    if (activeTab === "submitted") return schools.filter((s) => s.status === "COMPLETE");
     if (activeTab === "not_submitted")
-      return schools.filter((s) => s.status === "Ongoing" || s.status === "Incomplete");
+      return schools.filter((s) => s.status === "ONGOING" || s.status === "INCOMPLETE");
     return [];
   }, [activeTab, schools]);
 
@@ -202,6 +202,10 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
 const SchoolCard = ({ school, statusLabels, getDisplayStatus, onAccountClick }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  function capitalize(str){
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
   return (
     <div
       className="school-card"
@@ -233,7 +237,7 @@ const SchoolCard = ({ school, statusLabels, getDisplayStatus, onAccountClick }) 
               </strong>
             </span>
             <span className={`account-status-badge small ${getDisplayStatus(account.status)}`}>
-              {statusLabels[account.status] || "Pending"}
+              {capitalize(account.remarks)}
             </span>
           </div>
         ))}

@@ -37,11 +37,11 @@ const formatTime = (dateString) => {
 // Get status color based on task status
 const getStatusColor = (status) => {
   switch (status) {
-    case "Completed":
+    case "COMPLETE":
       return "#4CAF50"; // Green for completed
-    case "Incomplete":
+    case "INCOMPLETE":
       return "#D32F2F"; // Red for incomplete
-    case "Ongoing":
+    case "ONGOING":
     default:
       return "#2196F3"; // Blue for ongoing
   }
@@ -49,7 +49,7 @@ const getStatusColor = (status) => {
 
 const TaskDescription = ({ task, creator_name, creation_date, completion_date, deadline, description, isCompleted }) => {
   // Determine the actual status (if manually completed, override the task status)
-  const actualStatus = isCompleted ? "Completed" : (task?.task_status || "Ongoing");
+  const actualStatus = isCompleted ? "COMPLETE" : (task?.task_status || "ONGOING");
   const statusColor = getStatusColor(actualStatus);
 
   return (
@@ -67,7 +67,7 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
       {/* Meta Info */}
       <div className="task-meta">
         <div className="task-category">{task?.section || task?.sectionName || "Unknown Section"}</div>
-        {actualStatus === "Completed" && completion_date ? (
+        {actualStatus === "COMPLETE" && completion_date ? (
           <div className="task-completed">
             Completed on {formatDate(completion_date)} at {formatTime(completion_date)}
           </div>

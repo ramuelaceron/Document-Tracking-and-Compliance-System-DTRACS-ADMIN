@@ -142,3 +142,23 @@
   text-align: right;
   color: #333;
 }
+
+.focal-name.unassigned {
+  color: #999;
+  font-style: italic;
+}
+
+.focal-avatar-generated {
+  width: 48px;
+  height: 48px;
+  margin-right: 10PX;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

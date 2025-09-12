@@ -1,14 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { generateAvatar } from '../../utils/iconGenerator';
 import "./FocalCard.css";
-import { FaUserCircle } from "react-icons/fa";
 import { createSlug } from "../../utils/idGenerator";
 
-const COLORS = ["#4CAF50", "#E53935", "#1E88E5"]; 
+const COLORS = ["#4CAF50", "#E53935", "#1E88E5"];
 
 const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
   const navigate = useNavigate();
+
+  // ✅ Generate avatar initials & color based on the focal person's name
+  const { initials, color } = generateAvatar(name);
 
   const handleDocumentClick = (task) => {
     navigate(`/task/${sectionId}/${createSlug(task.title)}`, {
@@ -34,11 +37,23 @@ const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
       <div 
         className="focal-header" 
         onClick={() => navigate(`/sections/${sectionId}/task/ongoing`)}
+        role="button"
+        tabIndex={0}
       >
-        <FaUserCircle className="focal-avatar" />
+        {/* ✅ Replace FaUserCircle with generated avatar */}
+        <div 
+          className="focal-avatar-generated"
+          style={{ backgroundColor: color }}
+          aria-label={`${name}'s avatar`}
+        >
+          {initials}
+        </div>
+
         <div>
           <h3>{section}</h3>
-          <p>{name}</p>
+          <p className={name === "No yet assigned" ? "focal-name unassigned" : "focal-name"}>
+            {name}
+          </p>
         </div>
       </div>
 

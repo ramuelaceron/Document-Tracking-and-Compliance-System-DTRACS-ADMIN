@@ -8,9 +8,6 @@ import ParticleBackground from "../../components/ParticleBackground/Particle2.js
 import "../../components/ParticleBackground/Particle2.css";
 import logo from "../../assets/images/logo-w-text.png";
 
-// Optional: Keep AdminAccountData for testing
-import { AdminAccountData } from "../../data/accountData";
-
 import {API_BASE_URL} from "../../api/api"
 
 const Login = () => {
@@ -51,7 +48,13 @@ const Login = () => {
 
       // ✅ Login successful
       // Store user data in sessionStorage
-      sessionStorage.setItem("currentUser", JSON.stringify(data));
+      sessionStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          ...data,
+          email, // take from the login input
+        })
+      );
 
       // Redirect to sections
       navigate("/sections");
@@ -70,12 +73,6 @@ const Login = () => {
 
   const handleLogoClick = () => {
     navigate("/login");
-  };
-
-  // Optional: Pre-fill admin credentials (for testing only)
-  const fillAdminCredentials = () => {
-    setEmail(AdminAccountData.email);
-    setPassword(AdminAccountData.password);
   };
 
   return (

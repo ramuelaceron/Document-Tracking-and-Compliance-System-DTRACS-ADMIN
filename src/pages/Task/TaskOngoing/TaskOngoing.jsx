@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { PiClipboardTextBold } from "react-icons/pi";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -41,6 +41,13 @@ const TaskOngoing = () => {
   const [openGroups, setOpenGroups] = useState(() =>
     sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {})
   );
+  
+  useEffect(() => {
+    if (sortedDates.length > 0 && Object.keys(openGroups).length === 0) {
+      setOpenGroups(sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {}));
+    }
+  }, [sortedDates, openGroups]);
+
 
   const toggleGroup = (date) => {
     setOpenGroups((prev) => ({
@@ -66,6 +73,7 @@ const TaskOngoing = () => {
   return (
     <div className="ongoing-app">
       <main className="ongoing-main">
+
         {sortedDates.length > 0 ? (
           sortedDates.map((date) => {
             const tasks = groupedByDate[date];
@@ -95,7 +103,7 @@ const TaskOngoing = () => {
                       const { total, completed } = getTaskCompletionStats(task);
                       
                       return (
-                        <div className="ongoing-task-item" key={task.id}>
+                        <div className="ongoing-task-item" key={task.task_id}>
                           <div className="ongoing-task-header">
                             <div className="ongoing-task-icon">
                               <PiClipboardTextBold className="icon-lg" />
@@ -126,7 +134,7 @@ const TaskOngoing = () => {
                                 section_designation: task.section_designation,
                                 section_name: task.sectionName,
                                 full_name: task.creator_name,
-                                task_status: task.task_status || "Ongoing"
+                                task_status: task.task_status || "ONGOING"
                               }}
                               className="ongoing-description-link"
                             >

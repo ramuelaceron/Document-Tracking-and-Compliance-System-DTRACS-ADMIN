@@ -31,7 +31,7 @@ function App() {
 
         <Route path="/sections/:sectionId/task/" element={<TaskPage />} >
           <Route path="ongoing" element={<TaskOngoing />} />
-          <Route path="incomplete" element={<TaskIncomplete />} />
+          <Route path="incomplete" element={<TaskIncomplete />} />  
           <Route path="history" element={<TaskHistory />} /> 
         </Route>
 

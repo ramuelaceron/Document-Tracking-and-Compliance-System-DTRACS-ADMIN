@@ -4,12 +4,10 @@ import "./TaskDetailPage.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoChevronBackOutline } from "react-icons/io5";
-import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
 // Components
 import TaskDescription from "../../components/TaskDetailComponents/TaskDescription/TaskDescription";
 import SchoolStats from "../../components/TaskDetailComponents/SchoolStats/SchoolStats";
-import TaskComments from "../../components/TaskComments/TaskComments";
 
 // Mock Data
 import { taskData } from "../../data/taskData";
@@ -21,7 +19,6 @@ const TaskDetailPage = () => {
 
   const [isCompleted, setIsCompleted] = useState(false);
   const [isLate, setIsLate] = useState(false);
-  const [showComments, setShowComments] = useState(false);
 
   // Use state data first, then try to find in taskData if needed
   let task = state?.taskData || null;
@@ -63,17 +60,13 @@ const TaskDetailPage = () => {
   const taskId = task?.task_id || state?.taskId;
   const creator_name = task?.creator_name || state?.creator_name || "Unknown Creator";
   const section_name = task?.sectionName || state?.section_name || "General";
-  const taskComments = task?.comments || [];
-
-  // Check if there are any comments
-  const hasComments = taskComments && taskComments.length > 0;
 
   useEffect(() => {
     const status = task?.task_status || state?.task_status;
-    if (status === "Completed") {
+    if (status === "COMPLETE") {
       setIsCompleted(true);
       setIsLate(false);
-    } else if (status === "Incomplete") {
+    } else if (status === "INCOMPLETE") {
       setIsCompleted(false);
       setIsLate(true);
     } else {
@@ -83,10 +76,6 @@ const TaskDetailPage = () => {
   }, [task?.task_status, state?.task_status]);
 
   const handleBack = () => navigate(-1);
-  
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  };
 
   // Handle task not found
   if (!task && !state) {
@@ -119,7 +108,7 @@ const TaskDetailPage = () => {
               description: taskDescription,
               task_id: taskId,
               creator_name: creator_name,
-              task_status: state?.task_status || "Ongoing",
+              task_status: state?.task_status || "ONGOING",
               section: section_name
             }}
             creator_name={creator_name}
@@ -128,40 +117,6 @@ const TaskDetailPage = () => {
             description={taskDescription}
             isCompleted={isCompleted}
           />
-          
-          {/* Comments Section */}
-          <div className="comments-section">
-            {/* Show toggle button only if there are comments */}
-            {hasComments ? (
-              <div className="comments-toggle-section">
-                <button 
-                  className="comments-toggle-btn" 
-                  onClick={toggleComments}
-                  aria-expanded={showComments}
-                >
-                  {showComments ? (
-                    <>
-                      <RiEyeOffLine className="icon-md" /> Hide Comments
-                    </>
-                  ) : (
-                    <>
-                      <RiEyeLine className="icon-md" /> See Comments ({taskComments.length})
-                    </>
-                  )}
-                </button>
-              </div>
-            ) : (
-              // Display message when there are no comments
-              <div className="no-comments-message">
-                <p>No comments yet.</p>
-              </div>
-            )}
-            
-            {/* Show comments only if toggled and there are comments */}
-            {showComments && hasComments && (
-              <TaskComments comments={taskComments} />
-            )}
-          </div>
       </div>
 
       <div className="task-detail-right">

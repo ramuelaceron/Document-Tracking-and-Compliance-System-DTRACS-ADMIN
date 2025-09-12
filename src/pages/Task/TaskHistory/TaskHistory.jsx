@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { PiClipboardTextBold } from "react-icons/pi";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -41,6 +41,13 @@ const TaskHistory = () => {
   const [openGroups, setOpenGroups] = useState(() =>
     sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {})
   );
+
+  useEffect(() => {
+    if (sortedDates.length > 0 && Object.keys(openGroups).length === 0) {
+      setOpenGroups(sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {}));
+    }
+  }, [sortedDates, openGroups]);
+
 
   const toggleGroup = (date) => {
     setOpenGroups((prev) => ({
@@ -97,7 +104,7 @@ const TaskHistory = () => {
                       const completionDate = task.completion_date || task.creation_date;
                       
                       return (
-                        <div className="history-task-item" key={task.id}>
+                        <div className="history-task-item" key={task.task_id}>
                           <div className="history-task-header">
                             <div className="history-task-icon">
                               <PiClipboardTextBold className="icon-lg" />
@@ -131,7 +138,7 @@ const TaskHistory = () => {
                                 section_designation: task.section_designation,
                                 section_name: task.sectionName,
                                 full_name: task.creator_name,
-                                task_status: "Completed"
+                                task_status: "COMPLETE"
                               }}
                               className="history-description-link"
                             >

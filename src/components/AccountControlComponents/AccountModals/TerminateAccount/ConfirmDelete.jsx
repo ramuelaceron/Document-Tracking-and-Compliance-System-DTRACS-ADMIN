@@ -6,18 +6,13 @@ const ConfirmDelete = ({ isOpen, onClose, onConfirm, accountName }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const mockPassword = 'admin'; // 🔐 Change this in production
-
   const handleSubmit = () => {
-    if (!password) {
-      setError('Please enter the password');
+    if (!password.trim()) {
+      setError('Please enter your password');
       return;
     }
-    if (password !== mockPassword) {
-      setError('Incorrect password');
-      return;
-    }
-    onConfirm();
+    // ✅ Send password to parent (TerminationPage) for real backend verification
+    onConfirm(password);
   };
 
   if (!isOpen) return null;

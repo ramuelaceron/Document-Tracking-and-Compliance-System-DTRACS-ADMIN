@@ -21,7 +21,7 @@ const SECTIONS = [
   "Water Sanitation, and Hygiene in Schools",
   "National Drug Education Program",
   "Reproductive Health",
-  "Youth Formation",
+  "Youth Formation Section",
 ];
 
 const DesignationPage = () => {

@@ -81,50 +81,62 @@ const TerminationPage = () => {
     fetchAccounts();
   }, [sortFilter]);
 
-  const handleTerminateAccount = async () => {
-    if (!accountToDelete?.user_id) {
-      toast.error("❌ No valid account selected.");
-      return;
+  const handleTerminateAccount = async (adminPassword) => {
+  if (!accountToDelete?.user_id) {
+    toast.error("❌ No valid account selected.");
+    return;
+  }
+
+  const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+  if (!currentUser?.user_id || !adminPassword) {
+    toast.error("❌ Admin credentials missing.");
+    return;
+  }
+
+  const userIdToDelete = accountToDelete.user_id;
+  const isSchool = accountToDelete.type === "School";
+  const endpoint = isSchool
+    ? "/admin/school/verified/account/delete/id/"
+    : "/admin/focal/verified/account/delete/id/";
+
+  try {
+    const url = `${API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userIdToDelete)}`;
+
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        user_id: currentUser.user_id,
+        password: adminPassword,
+      }),
+    });
+
+    let data = {};
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json();
     }
 
-    const userId = accountToDelete.user_id;
-    const isSchool = accountToDelete.type === "School";
-    const endpoint = isSchool
-      ? "/admin/school/verified/account/delete/id/"
-      : "/admin/focal/verified/account/delete/id/";
-
-    try {
-      const url = `${API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userId)}`;
-      console.log("Terminating account via:", url);
-
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-
-      let data = {};
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        data = await response.json();
-      }
-
-      if (!response.ok) {
-        throw new Error(data.message || `HTTP ${response.status}: Failed to terminate account`);
-      }
-
-      toast.error(`${getDisplayName(accountToDelete)} has been deleted.`, {
-        autoClose: 3000,
-      });
-      setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
-    } catch (err) {
-      console.error("Termination failed:", err);
-      toast.error(`❌ ${err.message}`);
-    } finally {
-      setIsDeleteModalOpen(false);
-      setAccountToDelete(null);
+    if (!response.ok) {
+      // ❗ Keep modal open and show error in modal
+      throw new Error(data.message || `HTTP ${response.status}: ${data.detail || 'Failed to terminate account'}`);
     }
-  };
+
+    toast.success(`${getDisplayName(accountToDelete)} has been deleted.`, {
+      autoClose: 3000,
+    });
+
+    setAccounts((prev) => prev.filter((acc) => acc.user_id !== userIdToDelete));
+    setIsDeleteModalOpen(false);
+    setAccountToDelete(null);
+  } catch (err) {
+    console.error("Termination failed:", err);
+    // ❗ Show error in modal instead of toast
+    // You’ll need to pass setError back to ConfirmDelete — optional
+    toast.error(`❌ ${err.message}`);
+  }
+};
 
   const getDisplayName = (acc) => {
     if (!acc) return "Unknown User";
