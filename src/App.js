@@ -15,6 +15,7 @@ import TaskHistory from "./pages/Task/TaskHistory/TaskHistory";
 import VerificationPage from "./pages/AccountControl/VerificationPage";
 import TerminationPage from "./pages/AccountControl/TerminationPage";
 import DesignationPage from "./pages/AccountControl/DesignationPage";
+import AttachmentsPage from "./pages/AttachmentsPage/AttachmentsPage";
 
 
 function App() {
@@ -27,15 +28,16 @@ function App() {
 
       <Route element={<Home />}>
         <Route path="/sections" element={<Dashboard />} />
-        <Route path="/sections/:sectionId" element={<SectionPage />} />
-
-        <Route path="/sections/:sectionId/task/" element={<TaskPage />} >
-          <Route path="ongoing" element={<TaskOngoing />} />
-          <Route path="incomplete" element={<TaskIncomplete />} />  
-          <Route path="history" element={<TaskHistory />} /> 
+        <Route path="/sections/:sectionId" element={<SectionPage />} >
+          <Route path="/sections/:sectionId/task/" element={<TaskPage />} >
+            <Route path="ongoing" element={<TaskOngoing />} />
+            <Route path="incomplete" element={<TaskIncomplete />} />  
+            <Route path="history" element={<TaskHistory />} /> 
+          </Route>
         </Route>
 
         <Route path="/task/:sectionId/:taskSlug" element={<TaskDetailPage />} />
+        <Route path="/task/:sectionId/:taskSlug/attachments" element={<AttachmentsPage />} /> 
 
         <Route path="/registered-schools" element={<RegisteredSchools />} />
         <Route path="/schools/:schoolSlug" element={<SchoolAccDisplay />} />

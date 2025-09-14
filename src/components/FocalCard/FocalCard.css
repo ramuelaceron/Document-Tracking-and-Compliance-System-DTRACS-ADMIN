@@ -6,6 +6,8 @@
   overflow: hidden;
   width: 490px;
   cursor: pointer;
+  margin-top: 20px;
+  margin-left: 20px;
 }
 
 .focal-header {
@@ -63,8 +65,8 @@
   border-radius: 4px;
 }
 
-.legend-box.complete { background: #4caf50; }
-.legend-box.past-due { background: #e53935; }
+.legend-box.completed { background: #4caf50; }
+.legend-box.incomplete { background: #e53935; }
 .legend-box.pending { background: #1e88e5; }
 
 /* Document List - Fixed Scroll & Spacing */

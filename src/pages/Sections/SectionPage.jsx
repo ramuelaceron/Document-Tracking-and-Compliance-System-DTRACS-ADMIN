@@ -1,119 +1,227 @@
-// src/pages/Sections/SectionPage.jsx
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { taskData } from "../../data/taskData";
+import { useParams, useLocation } from "react-router-dom";
 import FocalCard from "../../components/FocalCard/FocalCard";
 import { Outlet } from "react-router-dom";
-import { API_BASE_URL } from "../../api/api"; // Import API base
+import { API_BASE_URL } from "../../api/api";
+import { taskData } from "../../data/taskData";
 import "./SectionPage.css";
 
 const SectionPage = () => {
   const { sectionId } = useParams();
-  const section = taskData[sectionId];
+  const location = useLocation();
+  const designations = taskData[sectionId];
 
-  const [focalNames, setFocalNames] = useState({}); // { section_designation: "Full Name" or "No yet assigned" }
+  const [focalList, setFocalList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedFocal, setSelectedFocal] = useState(null);
 
-  // If on task-list route, render Outlet only
-  if (window.location.pathname.includes("task-list")) {
-    return <Outlet />;
-  }
+  const isInTaskRoute = location.pathname.startsWith(`/sections/${sectionId}/task/`);
 
-  // Fetch focal names for all section_designations in this section
   useEffect(() => {
-    if (!section || !Array.isArray(section) || section.length === 0) {
+    if (!designations || designations.length === 0) {
       setLoading(false);
       return;
     }
 
-    const fetchFocalNames = async () => {
+    const fetchFocalData = async () => {
       try {
-        const nameMap = {};
+        const results = [];
 
-        for (const item of section) {
-          const { section_designation } = item;
-
-          const response = await fetch(
-            `${API_BASE_URL}/school/office/section?section_designation=${encodeURIComponent(section_designation)}`
+        for (const designation of designations) {
+          // Step 1: Fetch focal person info from /admin/office/section
+          const res = await fetch(
+            `${API_BASE_URL}/admin/office/section?section_designation=${encodeURIComponent(designation)}`
           );
 
-
-          if (!response.ok) {
-            console.warn(`Failed to fetch focal for: ${section_designation}`);
-            nameMap[section_designation] = "No yet assigned";
+          if (!res.ok) {
+            results.push({
+              section_designation: designation,
+              name: "Not yet assigned",
+              role: null,
+              user_id: null,
+              taskStatus: {},
+              documents: [],
+            });
             continue;
           }
 
-          const data = await response.json();
-          if (data && data.length > 0) {
-            const firstFocal = data[0];
-            const fullName = `${firstFocal.first_name} ${firstFocal.middle_name ? firstFocal.middle_name + " " : ""}${firstFocal.last_name}`.trim();
-            nameMap[section_designation] = fullName;
+          const data = await res.json();
+
+          if (data && Array.isArray(data) && data.length > 0) {
+            const focal = data[0];
+            const fullName = `${focal.first_name} ${focal.middle_name ? focal.middle_name + " " : ""}${focal.last_name}`.trim();
+            const userId = focal.user_id;
+
+            let taskStatus = {};
+            let assignmentsStatus = [];
+            let documents = [];
+
+            // Step 2: Fetch task statistics (for pie chart)
+            if (userId) {
+              const statsRes = await fetch(
+                `${API_BASE_URL}/admin/recharts/task/data?user_id=${encodeURIComponent(userId)}`
+              );
+              if (statsRes.ok) {
+                const statsData = await statsRes.json();
+
+                // Extract task status for pie chart
+                const statusArray = statsData.task_status || [];
+                const focalStats = statusArray[0] || {};
+
+                taskStatus = {
+                  Completed: focalStats.complete || 0,
+                  Incomplete: focalStats.incomplete || 0,
+                  Ongoing: focalStats.ongoing || 0,
+                };
+
+                // Extract assignments_status for per-task progress calculation
+                assignmentsStatus = statsData.assignments_status || [];
+              } else {
+                console.warn(`Failed to fetch task stats for user_id: ${userId}`);
+              }
+
+              // Step 3: Fetch full task list (for documents)
+              const docsRes = await fetch(
+                `${API_BASE_URL}/admin/tasks/all/focal_id/?user_id=${encodeURIComponent(userId)}`
+              );
+              if (docsRes.ok) {
+                documents = await docsRes.json();
+
+                // ✅ ENRICH DOCUMENTS WITH PROGRESS FROM assignments_status
+                documents = documents.map(doc => {
+                  // Find matching assignment by task_id
+                  const assignment = assignmentsStatus.find(a => a.task_id === doc.id);
+
+                  if (assignment) {
+                    const { complete, incomplete } = assignment;
+                    const total = complete + incomplete;
+
+                    // Avoid division by zero
+                    const progress = total > 0 ? Math.round((complete / total) * 100) : 0;
+
+                    return {
+                      ...doc,
+                      progress, // ✅ Inject computed progress
+                    };
+                  }
+
+                  // If no assignment found, fallback to default based on task_status
+                  let fallbackProgress = 0;
+                  switch (doc.task_status) {
+                    case "COMPLETE":
+                      fallbackProgress = 100;
+                      break;
+                    case "ONGOING":
+                      fallbackProgress = 50;
+                      break;
+                    case "INCOMPLETE":
+                    default:
+                      fallbackProgress = 0;
+                  }
+
+                  return {
+                    ...doc,
+                    progress: fallbackProgress,
+                  };
+                });
+              } else {
+                console.warn(`Failed to fetch tasks for user_id: ${userId}`);
+              }
+            }
+
+            results.push({
+              section_designation: designation,
+              name: fullName,
+              role: focal.office,
+              user_id: userId,
+              taskStatus: taskStatus,
+              documents: documents, // ✅ Now enriched with dynamic progress!
+            });
           } else {
-            nameMap[section_designation] = "No yet assigned";
+            results.push({
+              section_designation: designation,
+              name: "Not yet assigned",
+              role: null,
+              user_id: null,
+              taskStatus: {},
+              documents: [],
+            });
           }
         }
 
-        setFocalNames(nameMap);
+        console.log("✅ Final focal list:", results);
+
+        setFocalList(results);
+
+        // Auto-select first valid focal
+        if (results.length > 0 && !selectedFocal) {
+          const firstValidFocal = results.find(r => r.user_id);
+          if (firstValidFocal) {
+            setSelectedFocal(firstValidFocal.user_id);
+          }
+        }
+
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching focal names:", err);
+        console.error("Error fetching focal ", err);
         setError("Failed to load focal assignments.");
         setLoading(false);
       }
     };
 
-    fetchFocalNames();
-  }, [sectionId, section]);
+    fetchFocalData();
+  }, [sectionId, designations]);
 
-  // Error state
-  if (error) {
-    return <div className="error">⚠️ {error}</div>;
-  }
+  if (error) return <div className="error">⚠️ {error}</div>;
+  if (!designations) return <div>Invalid section ID</div>;
 
-  // No section data
-  if (!section || !Array.isArray(section) || section.length === 0) {
-    return <div>No focal persons found for this section.</div>;
+  // ✅ RENDER LOADING SPINNER WHILE LOADING
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <p className="loading-text">Loading...</p>
+      </div>
+    );
   }
 
   return (
     <div className="focal-container">
-      {section.map((focal, index) => {
-        const sectionDesignation = focal.section_designation;
+      {!isInTaskRoute && (
+        <>
+          {focalList.map((focal, index) => {
+            const stats = [
+              { name: "Completed", value: focal.taskStatus.Completed },
+              { name: "Incomplete", value: focal.taskStatus.Incomplete },
+              { name: "Pending", value: focal.taskStatus.Ongoing },
+            ];
 
-        // Transform tasklist for FocalCard
-        const documents = focal.tasklist?.map((task) => ({
-          id: task.task_id,
-          title: task.title,
-          progress: task.task_status === "Completed" ? 100 : task.task_status === "Incomplete" ? 0 : 50,
-          ...task,
-        })) || [];
+            console.log(`📊 Stats for ${focal.name}:`, stats);
+            console.log(`📄 Documents for ${focal.name}:`, focal.documents);
 
-        // Stats (you can enhance this later with real data)
-        const stats = [
-          { name: "Complete", value: documents.filter(d => d.progress === 100).length },
-          { name: "Past Due", value: documents.filter(d => d.progress === 0).length },
-          { name: "Pending", value: documents.filter(d => d.progress === 50).length },
-        ];
+            const isSelected = focal.user_id === selectedFocal;
 
-        // Get focal name from fetched data, fallback to "No yet assigned"
-        const focalName = focalNames[sectionDesignation] || "No yet assigned";
+            return (
+              <FocalCard
+                key={focal.user_id || `focal-${index}`}
+                section={focal.section_designation}
+                name={focal.name}
+                stats={stats}
+                documents={focal.documents} // ✅ Now includes calculated progress!
+                sectionId={sectionId}
+                id={focal.user_id}
+                isSelected={isSelected}
+                onSelect={() => {
+                  setSelectedFocal(focal.user_id);
+                }}
+              />
+            );
+          })}
+        </>
+      )}
 
-        return (
-          <FocalCard
-            key={focal.id || `focal-${index}`}
-            section={sectionDesignation}
-            name={focalName}
-            role={focal.office}
-            stats={stats}
-            documents={documents}
-            sectionId={sectionId}
-            id={focal.creator_id || `focal-${index}`}
-          />
-        );
-      })}
-      <Outlet />
+      <Outlet context={{ selectedFocal }} />
     </div>
   );
 };

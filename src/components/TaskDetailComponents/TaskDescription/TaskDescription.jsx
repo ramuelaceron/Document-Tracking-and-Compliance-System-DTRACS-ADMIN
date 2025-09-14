@@ -1,6 +1,6 @@
 import React from "react";
 import { PiClipboardTextBold } from "react-icons/pi";
-import "./TaskDescription.css"
+import "./TaskDescription.css";
 
 // Utility to format date
 const formatDate = (dateString) => {
@@ -52,6 +52,9 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
   const actualStatus = isCompleted ? "COMPLETE" : (task?.task_status || "ONGOING");
   const statusColor = getStatusColor(actualStatus);
 
+  // Extract task-level link
+  const taskLink = task?.link || null;
+
   return (
     <div className="task-description">
       <div className="task-header">
@@ -91,6 +94,22 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
       <div className="task-body">
         {description || task?.description || "No description provided."}
       </div>
+
+      {/* ✅ NEW: Task-Level Attachment Link */}
+      {taskLink && (
+        <div className="task-link-container">
+          <span className="task-link-label">Link:</span>
+          <a
+            href={taskLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="task-link"
+            title="Open task file in new tab"
+          >
+            {taskLink}
+          </a>
+        </div>
+      )}
     </div>
   );
 };

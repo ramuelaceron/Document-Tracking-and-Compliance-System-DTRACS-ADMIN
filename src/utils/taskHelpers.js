@@ -42,50 +42,27 @@ export const getWeekday = (dateStr) => {
   }
 };
 
-// Helper: Calculate completion stats based on schools_required and accounts_required
+// ✅ UPDATED: Calculate completion stats based on the correct data structure
 export const getTaskCompletionStats = (task) => {
-  // Extract unique school names from schools_required
-  const uniqueSchools = new Set(
-    (task.schools_required || [])
-      .map(school =>
-        typeof school === "string"
-          ? school.trim()
-          : typeof school === "object" && school.school_name
-            ? school.school_name.trim()
-            : ""
-      )
-      .filter(name => name)
-  );
-  const totalAssigned = uniqueSchools.size;
-
-  // Count unique schools in accounts_required with at least one "Completed" status
-  const schoolsWithCompleted = new Set();
-  task.accounts_required?.forEach(account => {
-    if (
-      account.status === "Completed" &&
-      account.school_name &&
-      uniqueSchools.has(account.school_name.trim())
-    ) {
-      schoolsWithCompleted.add(account.school_name.trim());
-    }
-  });
+  // Use the data we just extracted in fetchAssignmentsForTask
+  const totalAssigned = (task.schools_required || []).length;
+  const completed = (task.schools_submitted || []).length;
 
   return {
     total: totalAssigned,
-    completed: schoolsWithCompleted.size,
+    completed: completed,
   };
 };
 
 // Helper: Extract all ongoing tasks from taskData
 export const getAllOngoingTasks = (taskData) => {
   const tasks = [];
-
   Object.keys(taskData).forEach(sectionId => {
     const sectionArray = taskData[sectionId];
     if (Array.isArray(sectionArray)) {
       sectionArray.forEach(focal => {
         focal.tasklist?.forEach(task => {
-          if (task.task_status === "Ongoing") {
+          if (task.task_status === "ONGOING") {
             tasks.push({
               ...task,
               sectionId,
@@ -99,7 +76,6 @@ export const getAllOngoingTasks = (taskData) => {
       });
     }
   });
-
   // Sort by deadline (earliest first)
   return tasks.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 };

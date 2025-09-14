@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
+import { IoChevronBackOutline } from "react-icons/io5"; // Import back icon
 import "./TaskTabs.css";
 
 const TaskTabs = ({
@@ -11,6 +12,7 @@ const TaskTabs = ({
 }) => {
   const location = useLocation();
   const { sectionId } = useParams(); // Get the actual section ID from URL params
+  const navigate = useNavigate(); // For navigating back to SectionPage
   const [indicatorStyle, setIndicatorStyle] = useState({
     width: 0,
     transform: "translateX(0px)",
@@ -19,7 +21,6 @@ const TaskTabs = ({
 
   // Update the isActive function to use the actual sectionId
   const isActive = (path) => {
-    // For exact matching with the current location
     return location.pathname === `/sections/${sectionId}/task/${path}`;
   };
 
@@ -36,7 +37,19 @@ const TaskTabs = ({
 
   return (
     <div className="task-tabs-container">
+      {/* Tabs container now includes back button as first item */}
       <div className="task-tabs">
+        {/* Back Button — Only shown if we're inside a task tab route */}
+        {location.pathname.startsWith(`/sections/${sectionId}/task/`) && (
+          <button
+            className="task-tab task-back-tab"
+            onClick={() => navigate(`/sections/${sectionId}`)}
+            aria-label="Return to section overview"
+          >
+            <IoChevronBackOutline className="icon-md" />
+          </button>
+        )}
+
         <Link
           ref={(el) => (tabsRef.current[`/sections/${sectionId}/task/ongoing`] = el)}
           to={`/sections/${sectionId}/task/ongoing`}

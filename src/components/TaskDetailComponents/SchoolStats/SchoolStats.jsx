@@ -1,10 +1,9 @@
-// src/components/SchoolStats/SchoolStats.jsx
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SchoolStats.css";
 import { IoMdCheckmark } from "react-icons/io";
 
-// Import taskData and schoolAccounts
+// Import mock data (for fallback if backend fails)
 import { taskData } from "../../../data/taskData";
 import { schoolAccounts } from "../../../data/schoolAccounts";
 
@@ -38,7 +37,6 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
   // Get task from props or fallback to taskData
   const task = useMemo(() => {
     if (propTask) return propTask;
-
     if (propTaskId && propSectionId) {
       const section = taskData[propSectionId];
       if (Array.isArray(section)) {
@@ -54,64 +52,119 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
   // Function to get school logo by school name
   const getSchoolLogo = (schoolName) => {
     const school = schoolAccounts.find(account => account.school_name === schoolName);
-    return school ? school.logo : schoolLogo; // Return the school logo or default if not found
+    return school ? school.logo : "https://via.placeholder.com/40?text=No+Logo"; // Default placeholder
+  };
+
+  // ✅ Generate a mock attachment URL (for testing when backend doesn't provide 'link')
+  const generateMockAttachmentLink = (taskId, accountName, schoolName) => {
+    const safeAccount = encodeURIComponent(accountName);
+    const safeSchool = encodeURIComponent(schoolName);
+    const randomExt = ["pdf", "docx", "xlsx"][Math.floor(Math.random() * 3)];
+    return `https://example.com/attachment/${taskId}/${safeAccount}.${randomExt}?school=${safeSchool}`;
   };
 
   // Handle account click - navigate to attachments page (only for completed status)
   const handleAccountClick = (school, account) => {
-    if (account.status !== "Completed") return; // Only allow click for completed tasks
-    
+    // Only proceed if status is COMPLETE
+    if (account.status !== "COMPLETE") {
+      console.log("Account not complete:", account.assignedTo, "Status:", account.status);
+      return;
+    }
+
     // Create a URL-friendly slug from the task title
     const taskSlug = task?.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
+
+    // ✅ Extract attachment URL from account.attachments[0].url (fallback to mock if needed)
+    const attachmentUrl = account.attachments && account.attachments.length > 0
+      ? account.attachments[0].url
+      : generateMockAttachmentLink(task.task_id, account.assignedTo, school.name);
+
+    // If no URL at all, don't navigate
+    if (!attachmentUrl) {
+      console.warn("No attachment URL available for:", account.assignedTo);
+      return;
+    }
+
+    console.log("Navigating to:", `/task/${propSectionId}/${taskSlug}/attachments`);
     
     navigate(`/task/${propSectionId}/${taskSlug}/attachments`, {
       state: {
         schoolName: school.name,
         accountName: account.assignedTo,
-        attachments: account.attachments || [],
+        attachmentUrl, // 👈 Send the URL directly
         taskTitle: task?.title,
-        taskId: propTaskId // Still pass taskId in state for data retrieval
+        taskId: propTaskId
       }
     });
   };
 
-  // Group accounts by school
-  const schools = useMemo(() => {
-    if (!task || !task.accounts_required) return [];
-
-    // Group accounts by school
+  // ✅ Generate school groups from `schools_required` if `accounts_required` is not usable
+  const generateSchoolGroupsFromSchoolsRequired = () => {
+    if (!task || !Array.isArray(task.schools_required)) return [];
+    
     const schoolGroups = {};
-    task.accounts_required.forEach((account) => {
-      if (!schoolGroups[account.school_name]) {
-        schoolGroups[account.school_name] = {
-          id: `${task.task_id}-${account.school_id}`,
+    
+    // Use schools_required array as the source of truth
+    task.schools_required.forEach(schoolName => {
+      if (!schoolName) return;
+      
+      if (!schoolGroups[schoolName]) {
+        schoolGroups[schoolName] = {
+          id: `${task.task_id}-${schoolName}`,
           taskId: task.task_id,
           taskTitle: task.title,
-          schoolId: account.school_id,
-          name: account.school_name,
-          logo: getSchoolLogo(account.school_name),
+          schoolId: schoolName,
+          name: schoolName,
+          logo: getSchoolLogo(schoolName),
           accounts: []
         };
       }
       
-      schoolGroups[account.school_name].accounts.push({
-        id: `${task.task_id}-${account.school_id}-${account.account_id}`,
-        accountId: account.account_id,
-        assignedTo: account.account_name,
-        status: account.status,
-        remarks: account.remarks,
-        attachments: account.attachments || [] // Include attachments if available
-      });
-    });
+      // Create dummy account entry with default values + mock link
+      const account = {
+        id: `${task.task_id}-${schoolName}-dummy`,
+        accountId: schoolName,
+        assignedTo: "Account Holder", // Placeholder
+        status: "ONGOING",
+        remarks: "",
+        attachments: [
+          {
+            url: generateMockAttachmentLink(task.task_id, "Account Holder", schoolName),
+            name: "Sample Submission.pdf",
+            type: "application/pdf"
+          }
+        ]
+      };
 
-    // Convert to array and determine overall school status
+      schoolGroups[schoolName].accounts.push(account);
+    });
+    
+    // Convert to array and determine overall school + account status
     return Object.values(schoolGroups).map(school => {
-      // Determine overall school status based on account statuses
+      const isSubmitted = Array.isArray(task.schools_submitted) && 
+                         task.schools_submitted.includes(school.name);
+
+      // ✅ CRITICAL FIX: Update ALL accounts' status based on school submission
+      school.accounts.forEach(acc => {
+        acc.status = isSubmitted ? "COMPLETE" : "ONGOING";
+        
+        // Ensure each account has an attachment URL (mock if missing)
+        if (!acc.attachments || acc.attachments.length === 0) {
+          acc.attachments = [
+            {
+              url: generateMockAttachmentLink(task.task_id, acc.assignedTo, school.name),
+              name: "Submission File",
+              type: "application/octet-stream"
+            }
+          ];
+        }
+      });
+
+      // Determine school status based on its accounts
       const accountStatuses = school.accounts.map(acc => acc.status);
-      
       if (accountStatuses.every(status => status === "COMPLETE")) {
         school.status = "COMPLETE";
       } else if (accountStatuses.some(status => status === "INCOMPLETE")) {
@@ -119,9 +172,77 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
       } else {
         school.status = "ONGOING";
       }
-      
+
       return school;
     });
+  };
+
+  // ✅ Group accounts by school
+  const schools = useMemo(() => {
+    if (!task) return [];
+
+    // First, try to use accounts_required if it contains valid objects
+    if (Array.isArray(task.accounts_required) && task.accounts_required.length > 0) {
+      const firstItem = task.accounts_required[0];
+      if (firstItem && typeof firstItem === 'object' && 
+          'school_name' in firstItem && 'account_name' in firstItem) {
+        
+        const schoolGroups = {};
+        task.accounts_required.forEach((account) => {
+          if (!account.school_name || !account.account_name) return;
+          
+          if (!schoolGroups[account.school_name]) {
+            schoolGroups[account.school_name] = {
+              id: `${task.task_id}-${account.school_id || account.school_name}`,
+              taskId: task.task_id,
+              taskTitle: task.title,
+              schoolId: account.school_id || account.school_name,
+              name: account.school_name,
+              logo: getSchoolLogo(account.school_name),
+              accounts: []
+            };
+          }
+
+          // ✅ Ensure attachments array exists with URL (mock if backend didn’t provide it)
+          const attachmentUrl = account.link || generateMockAttachmentLink(
+            task.task_id,
+            account.account_name,
+            account.school_name
+          );
+
+          schoolGroups[account.school_name].accounts.push({
+            id: `${task.task_id}-${account.school_id || account.school_name}-${account.account_id || account.account_name}`,
+            accountId: account.account_id || account.account_name,
+            assignedTo: account.account_name,
+            status: account.status || "ONGOING",
+            remarks: account.remarks || "",
+            attachments: [
+              {
+                url: attachmentUrl,
+                name: "Submission File",
+                type: "application/octet-stream"
+              }
+            ]
+          });
+        });
+        
+        // Convert to array and determine overall school status
+        return Object.values(schoolGroups).map(school => {
+          const accountStatuses = school.accounts.map(acc => acc.status);
+          if (accountStatuses.every(status => status === "COMPLETE")) {
+            school.status = "COMPLETE";
+          } else if (accountStatuses.some(status => status === "INCOMPLETE")) {
+            school.status = "INCOMPLETE";
+          } else {
+            school.status = "ONGOING";
+          }
+          return school;
+        });
+      }
+    }
+    
+    // Fallback: Use schools_required to generate a basic group if accounts_required isn't usable
+    return generateSchoolGroupsFromSchoolsRequired();
   }, [task]);
 
   // Calculate counts
@@ -131,7 +252,6 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
     const notSubmitted = schools.filter(
       (s) => s.status === "ONGOING" || s.status === "INCOMPLETE"
     ).length;
-
     return { assigned, submitted, notSubmitted };
   }, [schools]);
 
@@ -191,7 +311,7 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
             />
           ))
         ) : (
-          <div className="no-schools">No schools Available.</div>
+          <div className="no-schools">No schools available.</div>
         )}
       </div>
     </div>
@@ -203,7 +323,7 @@ const SchoolCard = ({ school, statusLabels, getDisplayStatus, onAccountClick }) 
   const [isHovered, setIsHovered] = useState(false);
 
   function capitalize(str){
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
   }
 
   return (
@@ -214,14 +334,18 @@ const SchoolCard = ({ school, statusLabels, getDisplayStatus, onAccountClick }) 
     >
       <div className="school-header">
         <div className="school-left">
-          <img src={school.logo} alt="school-logo" /> 
+          <img 
+            src={school.logo} 
+            alt={`${school.name} logo`} 
+            onError={(e) => { e.target.src = "https://via.placeholder.com/40?text=No+Logo"; }} 
+          />
           <h4 className="school-name">{school.name}</h4>
         </div>
         <span className={`status-badge ${getDisplayStatus(school.status)}`}>
           {statusLabels[school.status] || "Pending"}
         </span>
       </div>
-      
+
       {/* Show all assigned accounts on hover */}
       <div className={`accounts-list ${isHovered ? 'expanded' : ''}`}>
         {school.accounts.map((account) => (
@@ -229,15 +353,19 @@ const SchoolCard = ({ school, statusLabels, getDisplayStatus, onAccountClick }) 
             <span className="account-name">
               Assigned to:{" "}
               <strong 
-                className={`account-name-text ${account.status === "Completed" ? "clickable-account" : "non-clickable-account"}`}
+                className={`account-name-text ${account.status === "COMPLETE" ? "clickable-account" : "non-clickable-account"}`}
                 onClick={() => onAccountClick(school, account)}
-                title={account.status === "Completed" ? "View attachments" : "No attachments available"}
+                title={account.status === "COMPLETE" ? "View attachments" : "No attachments available"}
               >
                 {account.assignedTo}
               </strong>
             </span>
             <span className={`account-status-badge small ${getDisplayStatus(account.status)}`}>
-              {capitalize(account.remarks)}
+              {capitalize(account.remarks || "")}
+              {account.attachments && account.attachments.length > 0 &&
+                account.attachments[0].url.startsWith('https://example.com') && (
+                  <span className="mock-indicator">(mock)</span>
+                )}
             </span>
           </div>
         ))}

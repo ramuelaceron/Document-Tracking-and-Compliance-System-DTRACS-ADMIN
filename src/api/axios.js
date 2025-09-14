@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://cu-so-tours-bookmark.trycloudflare.com",
+  baseURL: "https://respective-classroom-prohibited-sol.trycloudflare.com",
   timeout: 5000,
 });
 

@@ -1,20 +1,25 @@
-// src/pages/TaskPage.jsx
 import { useMemo, useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import TaskTabs from "../../../components/TaskTabs/TaskTabs";
 import { createSlug } from "../../../utils/idGenerator";
 import { API_BASE_URL } from "../../../api/api";
 import "./TaskPage.css";
 
 const TaskPage = () => {
-  // ✅ Declare ALL hooks first
   const [selectedSort, setSelectedSort] = useState("newest");
   const [tasks, setTasks] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const navigate = useNavigate();
+  const location = useLocation();
   const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+
+  // ✅ Get selectedFocal (which is now user_id) from Outlet context
+  const { selectedFocal } = useOutletContext(); // 👈 This is the user_id!
+
+  // useEffect(() => {
+  //   console.log('🔍 TaskPage received selectedFocal (user_id):', selectedFocal);
+  // }, [selectedFocal]);
 
   const isOfficeWithoutSection = currentUser?.role === "office" && (
     !currentUser.section_designation ||
@@ -23,76 +28,165 @@ const TaskPage = () => {
     currentUser.section_designation === "NULL"
   );
 
-  // ✅ Fetch assignments for a single task
+  // ✅ CORRECTED: Fetch assignments for one task
+  // This function now correctly parses the single array of assignment objects returned by the backend
   const fetchAssignmentsForTask = async (task_id, token) => {
+    // console.log('🔄 Fetching assignments for task_id:', task_id);
     try {
-      const response = await fetch(`${API_BASE_URL}/focal/task/assignments?task_id=${encodeURIComponent(task_id)}`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        console.warn(`Failed to fetch assignments for task ${task_id}: ${response.statusText}`);
-        return [];
-      }
-
-      return await response.json(); // Returns AssignedResponse[]
-    } catch (err) {
-      console.error(`Error fetching assignments for task ${task_id}:`, err);
-      return [];
-    }
-  };
-
-  // ✅ Enrich tasks with assignments
-  const enrichTasksWithAssignments = async (rawTasks, token) => {
-  const enrichedTasks = { ...rawTasks };
-
-  for (const [sectionName, sections] of Object.entries(enrichedTasks)) {
-    for (const section of sections) {
-      for (const task of section.tasklist) {
-        console.log(`BEFORE enrichment - Task: ${task.title}, Status: ${task.task_status}`); // 👈 ADD
-
-        const assignments = await fetchAssignmentsForTask(task.task_id, token);
-        console.log("📥 Assignments for task:", assignments); // 👈 ADD THIS
-
-        const uniqueSchools = [...new Set(assignments.map(a => a.school_id))];
-
-        task.schools_required = uniqueSchools;
-        task.accounts_required = assignments;
-
-        console.log(`AFTER enrichment - Task: ${task.title}, Status: ${task.task_status}`); // 👈 ADD
-      }
-    }
-  }
-
-  return enrichedTasks;
-};
-
-  // ✅ Fetch + enrich tasks
-  useEffect(() => {
-    const fetchAndEnrichTasks = async () => {
-      console.log("🔄 Fetching tasks from backend..."); // <-- ADD THIS
-
-      try {
-        setLoading(true);
-        const token = currentUser?.token;
-
-        const response = await fetch(`${API_BASE_URL}/focal/tasks/all`, {
+      const response = await fetch(
+        `${API_BASE_URL}/admin/task/assignments?task_id=${encodeURIComponent(task_id)}`,
+        {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
             "Content-Type": "application/json",
           },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch assignments for task ${task_id}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      // console.log('✅ Assignments fetched for task_id:', task_id, data);
+
+      // ✅ PARSE THE BACKEND'S ACTUAL RESPONSE: An ARRAY of assignment objects
+      const assignments = Array.isArray(data) ? data : [];
+
+      // Extract unique school names and build detailed account arrays
+      const schoolsRequired = new Set();
+      const schoolsSubmitted = new Set();
+
+      const accountsRequired = [];
+      const accountsSubmitted = [];
+
+      assignments.forEach((assignment) => {
+        // Ensure we have required fields
+        if (!assignment.school_name || !assignment.account_name) return;
+
+        // Add school to required list
+        schoolsRequired.add(assignment.school_name);
+
+        // If status is COMPLETE, add to submitted lists
+        if (assignment.status === "COMPLETE") {
+          schoolsSubmitted.add(assignment.school_name);
+          accountsSubmitted.push({
+            ...assignment,
+            status: "COMPLETE", // Ensure consistency
+          });
+        }
+
+        // Always add account to required list
+        accountsRequired.push({
+          ...assignment,
+          status: assignment.status || "ONGOING", // Default if missing
+        });
+      });
+
+      // Convert sets back to arrays
+      const schoolsRequiredArray = Array.from(schoolsRequired);
+      const schoolsSubmittedArray = Array.from(schoolsSubmitted);
+
+      return {
+        schools_required: schoolsRequiredArray,
+        schools_submitted: schoolsSubmittedArray,
+        schools_not_submitted: schoolsRequiredArray.filter(school => !schoolsSubmitted.has(school)),
+        accounts_required: accountsRequired,
+        accounts_submitted: accountsSubmitted,
+        accounts_not_submitted: accountsRequired.filter(acc => acc.status !== "COMPLETE"),
+      };
+    } catch (err) {
+      console.error(`❌ Error fetching assignments for task ${task_id}:`, err);
+      return {
+        schools_required: [],
+        schools_submitted: [],
+        schools_not_submitted: [],
+        accounts_required: [],
+        accounts_submitted: [],
+        accounts_not_submitted: [],
+      };
+    }
+  };
+
+  // ✅ OPTIMIZED: Fetch ALL task assignments in ONE parallel batch
+  const enrichTasksWithAssignments = async (rawTasks, token) => {
+    // console.log('🔄 Extracting all task_ids for parallel assignment fetching...');
+
+    // STEP 1: Collect ALL task objects across ALL sections
+    const allTasks = []; // Store full task objects
+    const taskToSectionMap = {}; // Map task_id -> sectionName and original task object
+
+    Object.entries(rawTasks).forEach(([sectionName, sections]) => {
+      sections.forEach((section) => {
+        section.tasklist.forEach((task) => {
+          allTasks.push(task); // Add the full task object
+          taskToSectionMap[task.task_id] = { sectionName, section, task }; // Keep track of where it came from
+        });
+      });
+    });
+
+    // console.log(`✅ Found ${allTasks.length} total tasks to fetch assignments for.`);
+
+    // STEP 2: Fetch ALL assignments in ONE parallel batch
+    const assignmentPromises = allTasks.map((task) =>
+      fetchAssignmentsForTask(task.task_id, token)
+    );
+
+    const assignmentResults = await Promise.all(assignmentPromises);
+
+    // STEP 3: Rebuild the nested tasks structure using the results
+    const enrichedTasks = {};
+
+    Object.entries(rawTasks).forEach(([sectionName, sections]) => {
+      const enrichedSections = [];
+
+      sections.forEach((section) => {
+        const enrichedSection = { ...section };
+        // Replace tasklist with updated tasks
+        enrichedSection.tasklist = section.tasklist.map((task) => {
+          // Find the corresponding assignment result using the task_id
+          const index = allTasks.findIndex(t => t.task_id === task.task_id);
+          const assignmentData = index !== -1 ? assignmentResults[index] : {};
+          return {
+            ...task,
+            ...assignmentData, // Merge assignment data onto the task
+          };
         });
 
+        enrichedSections.push(enrichedSection);
+      });
+
+      enrichedTasks[sectionName] = enrichedSections;
+    });
+
+    // console.log('✅ All assignments fetched and merged.');
+    return enrichedTasks;
+  };
+
+  useEffect(() => {
+    const fetchAndEnrichTasks = async () => {
+      if (!selectedFocal) {
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        const token = currentUser?.token;
+
+        // ✅ STEP 1: Fetch raw tasks for focal user
+        const response = await fetch(
+          `${API_BASE_URL}/admin/tasks/all/focal_id/?user_id=${encodeURIComponent(selectedFocal)}`,
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error(`Failed to fetch tasks: ${response.statusText}`);
         }
-
         const rawData = await response.json();
-        console.log("📡 Raw tasks received:", rawData); // <-- ADD THIS
 
+        // ✅ STEP 2: Group by section (unchanged)
         const groupedBySection = rawData.reduce((acc, task) => {
           const sectionName = task.section || "General";
           if (!acc[sectionName]) {
@@ -108,9 +202,9 @@ const TaskPage = () => {
           return acc;
         }, {});
 
+        // ✅ STEP 3: ENRICH WITH ASSIGNMENTS — THIS IS THE KEY! (Now optimized)
         const enrichedTasks = await enrichTasksWithAssignments(groupedBySection, token);
-
-        setTasks(enrichedTasks);
+        setTasks(enrichedTasks); // 👈 Now each task has correct schools_required, accounts_required, etc.
       } catch (err) {
         console.error("Error fetching and enriching tasks:", err);
         setError(err.message);
@@ -119,45 +213,38 @@ const TaskPage = () => {
       }
     };
 
-    // ✅ Fetch immediately on mount
     fetchAndEnrichTasks();
+  }, [selectedFocal, currentUser]);
 
-    // ✅ Set up polling every 30 seconds
-    const intervalId = setInterval(fetchAndEnrichTasks, 30_000); // 30 seconds
-
-    // ✅ Clean up interval on unmount
-    return () => clearInterval(intervalId);
-  }, []); // <-- Keep empty dependency array
-
-  // ✅ useMemo: called unconditionally
+  // ✅ Memoized computed values — unchanged
   const allOffices = useMemo(() => {
+    if (!tasks || typeof tasks !== 'object') return [];
     return [
       ...new Set(
         Object.values(tasks)
           .flat()
-          .flatMap((section) => section.tasklist.map((task) => task.office))
+          .flatMap((section) => section.tasklist?.map((task) => task.office) || [])
       ),
     ].sort();
   }, [tasks]);
 
-  // ✅ useMemo: called unconditionally
   const { upcomingTasks, pastDueTasks, completedTasks } = useMemo(() => {
-    console.log("🧮 Recalculating task categories..."); // <-- ADD THIS
+    if (!tasks || typeof tasks !== 'object') {
+      return { upcomingTasks: [], pastDueTasks: [], completedTasks: [] };
+    }
     const upcoming = [];
     const pastDue = [];
     const completed = [];
     const now = new Date();
-
     Object.entries(tasks).forEach(([sectionName, sections]) => {
+      if (!Array.isArray(sections)) return;
       sections.forEach((section) => {
+        if (!Array.isArray(section.tasklist)) return;
         section.tasklist.forEach((task) => {
           const taskDeadline = new Date(task.deadline);
           const taskStatus = task.task_status || "ONGOING";
-
-          console.log(`Task: ${task.title} | Status: ${taskStatus}`); // <-- LOG EACH TASK STATUS
-
           const taskDataObj = {
-            id: task.creator_id,
+            id: task.user_id,
             task_id: task.task_id,
             title: task.title,
             deadline: task.deadline,
@@ -171,11 +258,14 @@ const TaskPage = () => {
             description: task.description,
             task_status: taskStatus,
             section_designation: sectionName,
-            schools_required: task.schools_required || [], // Now real school IDs
-            accounts_required: task.accounts_required || [], // Now real assignments
+            schools_required: task.schools_required || [],
+            schools_submitted: task.schools_submitted || [],
+            schools_not_submitted: task.schools_not_submitted || [],
+            accounts_required: task.accounts_required || [],
+            accounts_submitted: task.accounts_submitted || [],
+            accounts_not_submitted: task.accounts_not_submitted || [],
             originalTask: task,
           };
-
           if (taskStatus === "COMPLETE") {
             completed.push({
               ...taskDataObj,
@@ -191,11 +281,43 @@ const TaskPage = () => {
         });
       });
     });
-
     return { upcomingTasks: upcoming, pastDueTasks: pastDue, completedTasks: completed };
   }, [tasks]);
 
-  // ✅ NOW return conditionally (after hooks)
+  // ✅ Sort utility — unchanged
+  const sortTasks = (tasks, sortOption) => {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    switch (sortOption) {
+      case "newest":
+        return [...tasks].sort((a, b) => new Date(b.creation_date) - new Date(a.creation_date));
+      case "oldest":
+        return [...tasks].sort((a, b) => new Date(a.creation_date) - new Date(b.creation_date));
+      case "today":
+        return tasks.filter((task) => {
+          const taskDate = new Date(task.deadline);
+          return taskDate >= startOfDay && taskDate < new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+        });
+      case "week":
+        return tasks.filter((task) => {
+          const taskDate = new Date(task.deadline);
+          const nextWeek = new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
+          return taskDate >= startOfWeek && taskDate < nextWeek;
+        });
+      case "month":
+        return tasks.filter((task) => {
+          const taskDate = new Date(task.deadline);
+          const nextMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 1);
+          return taskDate >= startOfMonth && taskDate < nextMonth;
+        });
+      default:
+        return tasks;
+    }
+  };
+
+  // ✅ Return UI
   if (isOfficeWithoutSection) {
     return (
       <div className="no-section-page">
@@ -222,55 +344,6 @@ const TaskPage = () => {
     );
   }
 
-
-  const sortTasks = (tasks, sortOption) => {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfWeek = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - now.getDay()
-    );
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    switch (sortOption) {
-      case "newest":
-        return [...tasks].sort(
-          (a, b) => new Date(b.creation_date) - new Date(a.creation_date)
-        );
-      case "oldest":
-        return [...tasks].sort(
-          (a, b) => new Date(a.creation_date) - new Date(b.creation_date)
-        );
-      case "today":
-        return tasks.filter((task) => {
-          const taskDate = new Date(task.deadline);
-          return (
-            taskDate >= startOfDay &&
-            taskDate < new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000)
-          );
-        });
-      case "week":
-        return tasks.filter((task) => {
-          const taskDate = new Date(task.deadline);
-          const nextWeek = new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
-          return taskDate >= startOfWeek && taskDate < nextWeek;
-        });
-      case "month":
-        return tasks.filter((task) => {
-          const taskDate = new Date(task.deadline);
-          const nextMonth = new Date(
-            startOfMonth.getFullYear(),
-            startOfMonth.getMonth() + 1,
-            1
-          );
-          return taskDate >= startOfMonth && taskDate < nextMonth;
-        });
-      default:
-        return tasks;
-    }
-  };
-
   return (
     <div className="task-layout">
       <TaskTabs
@@ -287,6 +360,7 @@ const TaskPage = () => {
           completedTasks: sortTasks(completedTasks, selectedSort),
           selectedSort,
           allOffices,
+          selectedFocal,
         }}
       />
     </div>

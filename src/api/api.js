@@ -1,2 +1,2 @@
 
-export const API_BASE_URL = "https://cu-so-tours-bookmark.trycloudflare.com"
+export const API_BASE_URL = "https://respective-classroom-prohibited-sol.trycloudflare.com"

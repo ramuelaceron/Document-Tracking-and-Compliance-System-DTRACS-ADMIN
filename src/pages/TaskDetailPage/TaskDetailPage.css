@@ -130,3 +130,8 @@
 .comments-toggle-btn .icon-md {
   font-size: 1.1rem;
 }
+
+.loading{
+  padding-left: 40px;
+  font-style: italic;
+}

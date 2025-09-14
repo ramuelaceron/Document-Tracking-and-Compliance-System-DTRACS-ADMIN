@@ -1,16 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
 import { generateAvatar } from '../../utils/iconGenerator';
 import "./FocalCard.css";
 import { createSlug } from "../../utils/idGenerator";
 
 const COLORS = ["#4CAF50", "#E53935", "#1E88E5"];
 
-const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
+const FocalCard = ({ section, name, stats, documents, sectionId, id, isSelected, onSelect }) => {
   const navigate = useNavigate();
 
-  // ✅ Generate avatar initials & color based on the focal person's name
   const { initials, color } = generateAvatar(name);
 
   const handleDocumentClick = (task) => {
@@ -23,6 +22,7 @@ const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
         taskDescription: task.description,
         taskId: task.id,
         creator_name: task.creator_name,
+        id: task.user_id,
         section_designation: task.section_designation,
         section_name: task.sectionName,
         full_name: task.creator_name,
@@ -31,16 +31,24 @@ const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
     });
   };
 
+  const handleHeaderClick = () => {
+    onSelect();
+    navigate(`/sections/${sectionId}/task/ongoing`);
+  };
+
+  // Optional: Show fallback if no data
+  if (!stats || stats.length === 0) {
+    return <div className="focal-card">No data available</div>;
+  }
+
   return (
-    <div className="focal-card">
-      {/* Header → fixed navigation path */}
+    <div className={`focal-card ${isSelected ? 'focal-card-selected' : ''}`}>
       <div 
         className="focal-header" 
-        onClick={() => navigate(`/sections/${sectionId}/task/ongoing`)}
+        onClick={handleHeaderClick}
         role="button"
         tabIndex={0}
       >
-        {/* ✅ Replace FaUserCircle with generated avatar */}
         <div 
           className="focal-avatar-generated"
           style={{ backgroundColor: color }}
@@ -51,19 +59,19 @@ const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
 
         <div>
           <h3>{section}</h3>
-          <p className={name === "No yet assigned" ? "focal-name unassigned" : "focal-name"}>
+          <p className={name === "Not yet assigned" ? "focal-name unassigned" : "focal-name"}>
             {name}
           </p>
         </div>
       </div>
 
-      {/* Body */}
       <div className="focal-body">
-        {/* Donut Chart */}
         <div className="focal-chart">
-          <h4 className="summary">Monthly Summary</h4>
-          <ResponsiveContainer width={180} height={180}>
-            <PieChart>
+          <h4 className="summary">Summary</h4>
+          
+          {/* FIXED: Use simple div + explicit width/height on PieChart */}
+          <div style={{ width: 180, height: 180, margin: '0 auto' }}>
+            <PieChart width={180} height={180}>
               <Pie
                 data={stats}
                 cx="50%"
@@ -78,37 +86,40 @@ const FocalCard = ({ section, name, stats, documents, sectionId, id }) => {
                   <Cell key={`cell-${index}`} fill={COLORS[index]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value, name) => [`${value}%`, name]} />
+              <Tooltip formatter={(value, name) => [`${value}`, name]} />
             </PieChart>
-          </ResponsiveContainer>
-          {/* Legend */}
+          </div>
+
           <div className="focal-legend">
-            <span><span className="legend-box complete"></span>Complete</span>
-            <span><span className="legend-box past-due"></span>Past Due</span>
+            <span><span className="legend-box completed"></span>Completed</span>
+            <span><span className="legend-box incomplete"></span>Incomplete</span>
             <span><span className="legend-box pending"></span>Pending</span>
           </div>
         </div>
 
-        {/* Document List */}
         <div className="focal-documents">
-          {documents.map((doc, idx) => (
-            <button 
-              key={idx} 
-              className="focal-document"
-              onClick={() => handleDocumentClick(doc)}
-            >
-              <div className="subject-title">{doc.title}</div>
-              <div className="progress-wrapper">
-                <div className="progress-bar">  
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${doc.progress}%` }}
-                  ></div>   
+          {documents.length > 0 ? (
+            documents.map((doc, idx) => (
+              <button 
+                key={idx} 
+                className="focal-document"
+                onClick={() => handleDocumentClick(doc)}
+              >
+                <div className="subject-title">{doc.title}</div>
+                <div className="progress-wrapper">
+                  <div className="progress-bar">  
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${doc.progress}%` }}
+                    ></div>   
+                  </div>
+                  <span className="progress-value">{doc.progress}%</span>
                 </div>
-                <span className="progress-value">{doc.progress}%</span>
-              </div>
-            </button>
-          ))}
+              </button>
+            ))
+          ) : (
+            <p className="no-documents">No tasks assigned</p>
+          )}
         </div>
       </div>
     </div>
