@@ -1,0 +1,71 @@
+/* RichTextEditor.css */
+.rich-text-editor {
+  border: 1px solid #ddd;
+  background-color: white;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+.rich-text-editor .ql-container {
+  border: none;
+  min-height: 60px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.rich-text-editor .ql-editor {
+  padding: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  outline: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  resize: none;
+}
+
+.rich-text-editor .ql-toolbar {
+  border: none;
+  border-bottom: 1px solid #eee;
+  background-color: #f9f9f9;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 32px;
+}
+
+.rich-text-editor .ql-toolbar button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rich-text-editor .ql-toolbar button:hover,
+.rich-text-editor .ql-toolbar .ql-active {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+  color: #2196f3;
+}
+
+.rich-text-editor .ql-stroke,
+.rich-text-editor .ql-fill {
+  stroke: #333;
+  fill: #333;
+}
+
+/* Ensure no extra padding/margin from Quill */
+.rich-text-editor .ql-editor p {
+  margin: 0;
+}

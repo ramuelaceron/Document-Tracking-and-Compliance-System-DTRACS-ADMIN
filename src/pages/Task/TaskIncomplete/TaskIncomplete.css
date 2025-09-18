@@ -1,0 +1,400 @@
+/* ==================== */
+/*  Task Incomplete Styles */
+/* ==================== */
+
+.incomplete-app {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.incomplete-main {
+  flex: 1;
+  padding: 0;
+  background-color: #ffffff;
+  border: none;
+  overflow-y: auto;
+  padding-top: 20px;
+}
+
+/* ==================== */
+/*  Date Group Header   */
+/* ==================== */
+
+.incomplete-date-group {
+  margin-bottom: 20px;
+}
+
+.incomplete-date-header {
+  font-size: 16px;
+  color: #000;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  padding-top: 20px;
+  transition: color 0.2s ease;
+}
+
+.incomplete-date-header:hover {
+  color: #d32f2f;
+}
+
+.incomplete-weekday {
+  color: #999;
+  font-weight: normal;
+}
+
+.incomplete-date-bold {
+  font-weight: bold;
+}
+
+.incomplete-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.incomplete-task-count {
+  font-size: 12px;
+  margin-right: 10px;
+  color: #d32f2f;
+  font-weight: bold;
+  background-color: rgba(211, 47, 47, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.incomplete-dropdown-arrow {
+  font-size: 20px;
+  color: #d32f2f;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.incomplete-dropdown-arrow::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(211, 47, 47, 0.05);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+
+.incomplete-dropdown-arrow:hover::after {
+  opacity: 1;
+}
+
+.incomplete-dropdown-arrow:hover {
+  transform: scale(1.2);
+}
+
+.incomplete-dropdown-arrow svg {
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==================== */
+/*  Task List Container */
+/* ==================== */
+
+.incomplete-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ==================== */
+/*  Task Item - Card    */
+/* ==================== */
+
+.incomplete-task-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  padding-bottom: 8px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.incomplete-task-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  border-color: #d32f2f;
+}
+
+.incomplete-task-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background-color: #d32f2f;
+  transition: height 0.3s ease;
+}
+
+.incomplete-task-item:hover::before {
+  height: 100%;
+}
+
+/* ==================== */
+/*  Task Header         */
+/* ==================== */
+
+.incomplete-task-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.incomplete-task-icon {
+  width: 40px;
+  height: 40px;
+  background: #d32f2f;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.incomplete-task-item:hover .incomplete-task-icon {
+  transform: scale(1.05);
+  background-color: #b71c1c;
+}
+
+.incomplete-task-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.incomplete-task-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  max-width: 600px;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.incomplete-task-item:hover .incomplete-task-title {
+  color: #d32f2f;
+}
+
+.incomplete-task-office {
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.incomplete-task-deadline {
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding-left: 12px;
+  transition: color 0.2s ease;
+}
+
+.incomplete-task-deadline .incomplete-time {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.incomplete-task-item:hover .incomplete-task-deadline {
+  color: #d32f2f;
+}
+
+/* ==================== */
+/*  Task Footer - Hidden by Default, Shown on Hover */
+/* ==================== */
+
+.incomplete-task-footer {
+  display: flex;
+  opacity: 0;
+  height: 0;
+  visibility: hidden;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0;
+  border-top: 1px solid transparent;
+  margin-top: 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.incomplete-task-item:hover .incomplete-task-footer {
+  opacity: 1;
+  height: auto;
+  visibility: visible;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top-color: #eee;
+}
+
+.incomplete-description-link {
+  font-size: 12px;
+  color: #d32f2f;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: rgba(211, 47, 47, 0.1);
+  transition: all 0.2s ease;
+}
+
+.incomplete-description-link:hover {
+  text-decoration: none;
+  color: #fff;
+  background-color: #d32f2f;
+  transform: translateY(-1px);
+}
+
+.incomplete-assigned-submitted-counts {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #555;
+}
+
+.incomplete-count-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.incomplete-count-item:hover {
+  transform: translateY(-2px);
+}
+
+.incomplete-count-number {
+  font-weight: bold;
+  font-size: 14px;
+  color: #000;
+  transition: color 0.2s ease;
+}
+
+.incomplete-count-item:hover .incomplete-count-number {
+  color: #d32f2f;
+}
+
+.incomplete-count-label {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+  transition: color 0.2s ease;
+}
+
+.incomplete-count-item:hover .incomplete-count-label {
+  color: #666;
+}
+
+/* ==================== */
+/*  No Tasks Message    */
+/* ==================== */
+
+.incomplete-no-tasks {
+  color: #888;
+  text-align: center;
+  font-style: italic;
+  margin-top: 40px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* ==================== */
+/*  Responsive Design   */
+/* ==================== */
+
+@media (max-width: 768px) {
+  .incomplete-app {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  
+  .incomplete-task-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .incomplete-task-deadline {
+    margin-left: 0;
+    margin-top: 8px;
+    padding-left: 0;
+    align-self: flex-end;
+  }
+  
+  .incomplete-task-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .incomplete-date-header {
+    flex-wrap: wrap;
+  }
+  
+  .incomplete-header-actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .incomplete-task-item {
+    padding: 12px;
+  }
+  
+  .incomplete-task-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+}

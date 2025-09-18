@@ -1,0 +1,23 @@
+/* Make header fixed at the top */
+.app > header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px; /* adjust to your header height */
+  z-index: 1000;
+}
+
+/* Push content below header */
+.app-content {
+  flex: 1;
+  padding: 35px 40px;
+  margin-left: 40px;   /* default collapsed sidebar space */
+  margin-top: 40px;    /* 👈 pushes content below fixed header */
+  transition: margin-left 0.2s ease;
+}
+
+/* When sidebar is expanded */
+.sidebar.expanded ~ .app-content {
+  margin-left: 200px; /* expanded sidebar space */
+}

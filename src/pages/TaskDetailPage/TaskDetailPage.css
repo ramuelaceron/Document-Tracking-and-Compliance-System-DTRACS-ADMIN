@@ -1,0 +1,132 @@
+.task-detail-page {
+  display: flex;
+  gap: 20px;
+  padding: 70px 10px; 
+  margin-right: -20px;
+  margin-top: -43px;
+}
+
+.task-detail-left {
+  flex: 1;
+  margin-top: 2px; 
+}
+
+.task-detail-right {
+  flex: 1; 
+  margin-top: 60px; 
+}
+
+.task-back-btn {
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  line-height: 1;
+  text-decoration: none;
+  transition: text-decoration 0.2s ease;
+}
+
+.task-back-btn:hover {
+  text-decoration: underline;
+}
+
+.task-back-btn span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Comment Section */
+.task-comment-section {
+  margin-top: -15px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.task-comment-section h3 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 18px;
+}
+
+/* Comments Toggle Section */
+.comments-toggle-section {
+  margin-top: 1.5rem;
+  padding: 0 1.5rem;
+}
+
+.comments-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.comments-toggle-btn:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.comments-toggle-btn .icon-md {
+  font-size: 1.1rem;
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 1.5rem;
+}
+
+/* No Comments Message */
+.no-comments-message {
+  padding: 1.5rem;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.no-comments-message p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* Comments Toggle Section */
+.comments-toggle-section {
+  margin-bottom: 1rem;
+  padding: 0 1.5rem;
+}
+
+.comments-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.comments-toggle-btn:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.comments-toggle-btn .icon-md {
+  font-size: 1.1rem;
+}

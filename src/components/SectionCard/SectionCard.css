@@ -1,0 +1,75 @@
+.section-card {
+  width: 240px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;  
+  cursor: pointer;
+  border: 1px solid #b7b6b6;
+}
+
+.section-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 12px 24px rgba(79, 96, 235, 0.15),
+    0 4px 8px rgba(79, 96, 235, 0.1);
+}
+
+/* Top image placeholder */
+.section-card-image {
+  height: 125px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-card-image img {
+  max-width: 500px;
+  opacity: 0.9;
+}
+
+/* Bottom blue section */
+.section-card-body {
+  background: #203061;
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.section-card-body h3 {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.section-card-body h3:hover {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-decoration: underline;
+}
+
+.section-card-footer {
+  padding: 10px 0;
+  background: #203061;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+
+}
+
+.section-card-footer .sgod-logo {
+  width: 24px;
+  height: 24px;
+}

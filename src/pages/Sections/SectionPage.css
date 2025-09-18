@@ -1,0 +1,6 @@
+.focal-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px;
+}
