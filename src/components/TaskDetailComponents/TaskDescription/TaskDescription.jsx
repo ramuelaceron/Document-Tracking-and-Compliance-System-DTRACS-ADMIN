@@ -53,7 +53,7 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
   const statusColor = getStatusColor(actualStatus);
 
   // Extract task-level link
-  const taskLink = task?.link || null;
+  const taskLink = task?.links || null;
 
   return (
     <div className="task-description">

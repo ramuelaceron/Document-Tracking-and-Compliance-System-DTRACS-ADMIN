@@ -257,6 +257,7 @@ const TaskPage = () => {
             creator_name: task.creator_name,
             description: task.description,
             task_status: taskStatus,
+            links: task.links,
             section_designation: sectionName,
             schools_required: task.schools_required || [],
             schools_submitted: task.schools_submitted || [],

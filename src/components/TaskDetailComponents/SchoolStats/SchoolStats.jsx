@@ -60,41 +60,35 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
     const safeAccount = encodeURIComponent(accountName);
     const safeSchool = encodeURIComponent(schoolName);
     const randomExt = ["pdf", "docx", "xlsx"][Math.floor(Math.random() * 3)];
-    return `https://example.com/attachment/${taskId}/${safeAccount}.${randomExt}?school=${safeSchool}`;
+    return ``;
   };
 
   // Handle account click - navigate to attachments page (only for completed status)
   const handleAccountClick = (school, account) => {
-    // Only proceed if status is COMPLETE
+    // Only proceed if status is COMPLETE AND there's an actual attachment URL
     if (account.status !== "COMPLETE") {
       console.log("Account not complete:", account.assignedTo, "Status:", account.status);
       return;
     }
 
-    // Create a URL-friendly slug from the task title
+    // Check if attachment exists and has a valid URL
+    const attachment = account.attachments && account.attachments.length > 0 ? account.attachments[0] : null;
+    if (!attachment || !attachment.url || !attachment.url.trim()) {
+      console.warn("No attachment URL available for:", account.assignedTo);
+      return; // Do not navigate
+    }
+
+    // Create task slug
     const taskSlug = task?.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
-    // ✅ Extract attachment URL from account.attachments[0].url (fallback to mock if needed)
-    const attachmentUrl = account.attachments && account.attachments.length > 0
-      ? account.attachments[0].url
-      : generateMockAttachmentLink(task.task_id, account.assignedTo, school.name);
-
-    // If no URL at all, don't navigate
-    if (!attachmentUrl) {
-      console.warn("No attachment URL available for:", account.assignedTo);
-      return;
-    }
-
-    console.log("Navigating to:", `/task/${propSectionId}/${taskSlug}/attachments`);
-    
     navigate(`/task/${propSectionId}/${taskSlug}/attachments`, {
       state: {
         schoolName: school.name,
         accountName: account.assignedTo,
-        attachmentUrl, // 👈 Send the URL directly
+        attachmentUrl: attachment.url,
         taskTitle: task?.title,
         taskId: propTaskId
       }
@@ -353,19 +347,29 @@ const SchoolCard = ({ school, statusLabels, getDisplayStatus, onAccountClick }) 
             <span className="account-name">
               Assigned to:{" "}
               <strong 
-                className={`account-name-text ${account.status === "COMPLETE" ? "clickable-account" : "non-clickable-account"}`}
-                onClick={() => onAccountClick(school, account)}
-                title={account.status === "COMPLETE" ? "View attachments" : "No attachments available"}
+                className={`account-name-text ${
+                  account.status === "COMPLETE" && account.attachments?.[0]?.url 
+                    ? "clickable-account" 
+                    : "non-clickable-account"
+                }`}
+                onClick={() => {
+                  if (account.status === "COMPLETE" && account.attachments?.[0]?.url) {
+                    onAccountClick(school, account);
+                  }
+                }}
+                title={
+                  account.status === "COMPLETE" 
+                    ? (account.attachments?.[0]?.url 
+                        ? "View attachments" 
+                        : "No attachments available")
+                    : "No attachments available"
+                }
               >
                 {account.assignedTo}
               </strong>
             </span>
             <span className={`account-status-badge small ${getDisplayStatus(account.status)}`}>
               {capitalize(account.remarks || "")}
-              {account.attachments && account.attachments.length > 0 &&
-                account.attachments[0].url.startsWith('https://example.com') && (
-                  <span className="mock-indicator">(mock)</span>
-                )}
             </span>
           </div>
         ))}
