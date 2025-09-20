@@ -8,7 +8,7 @@ import ParticleBackground from "../../components/ParticleBackground/Particle2.js
 import "../../components/ParticleBackground/Particle2.css";
 import logo from "../../assets/images/logo-w-text.png";
 
-import {API_BASE_URL} from "../../api/api"
+import config from "../../config";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +26,7 @@ const Login = () => {
     // console.log("Submitting login:", { email, password });
 
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/login`, {
+      const response = await fetch(`${config.API_BASE_URL}/admin/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

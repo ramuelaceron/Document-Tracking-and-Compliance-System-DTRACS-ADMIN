@@ -13,7 +13,7 @@ import SchoolStats from "../../components/TaskDetailComponents/SchoolStats/Schoo
 import { taskData } from "../../data/taskData";
 
 // API
-import { API_BASE_URL } from "../../api/api";
+import config from "../../config";
 
 const TaskDetailPage = () => {
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ const TaskDetailPage = () => {
   const fetchAssignmentsForSingleTask = async (task_id, token) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/admin/task/assignments?task_id=${encodeURIComponent(task_id)}`,
+        `${config.API_BASE_URL}/admin/task/assignments?task_id=${encodeURIComponent(task_id)}`,
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",

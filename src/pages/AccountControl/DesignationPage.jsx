@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 
-import { API_BASE_URL } from "../../api/api";
+import config from "../../config";
 
 const SECTIONS = [
   "School Management Monitoring and Evaluation Section",
@@ -34,7 +34,7 @@ const DesignationPage = () => {
   const fetchAccounts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/focal/verified/accounts`, {
+      const res = await fetch(`${config.API_BASE_URL}/admin/focal/verified/accounts`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -79,7 +79,7 @@ const DesignationPage = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/focal/designation/id/`, {
+      const response = await fetch(`${config.API_BASE_URL}/admin/focal/designation/id/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

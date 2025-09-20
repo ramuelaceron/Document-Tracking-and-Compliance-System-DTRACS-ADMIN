@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import FocalCard from "../../components/FocalCard/FocalCard";
 import { Outlet } from "react-router-dom";
-import { API_BASE_URL } from "../../api/api";
+import config from "../../config";
 import { taskData } from "../../data/taskData";
 import "./SectionPage.css";
 
 const SectionPage = () => {
   const { sectionId } = useParams();
   const location = useLocation();
-  const designations = taskData[sectionId];
+  const designations = taskData[sectionId]; 
 
   const [focalList, setFocalList] = useState([]);
   const [error, setError] = useState(null);
@@ -25,7 +25,7 @@ const SectionPage = () => {
         for (const designation of designations) {
           // Step 1: Fetch focal person info from /admin/office/section
           const res = await fetch(
-            `${API_BASE_URL}/admin/office/section?section_designation=${encodeURIComponent(designation)}`
+            `${config.API_BASE_URL}/admin/office/section?section_designation=${encodeURIComponent(designation)}`
           );
 
           if (!res.ok) {
@@ -56,7 +56,7 @@ const SectionPage = () => {
             if (userId) {
               // Step 2: Fetch task statistics (for pie chart)
               const statsRes = await fetch(
-                `${API_BASE_URL}/admin/recharts/task/data?user_id=${encodeURIComponent(userId)}`
+                `${config.API_BASE_URL}/admin/recharts/task/data?user_id=${encodeURIComponent(userId)}`
               );
               if (statsRes.ok) {
                 const statsData = await statsRes.json();
@@ -78,7 +78,7 @@ const SectionPage = () => {
 
               // Step 3: Fetch full task list (for documents)
               const docsRes = await fetch(
-                `${API_BASE_URL}/admin/tasks/all/focal_id/?user_id=${encodeURIComponent(userId)}`
+                `${config.API_BASE_URL}/admin/tasks/all/focal_id/?user_id=${encodeURIComponent(userId)}`
               );
               if (docsRes.ok) {
                 documents = await docsRes.json();

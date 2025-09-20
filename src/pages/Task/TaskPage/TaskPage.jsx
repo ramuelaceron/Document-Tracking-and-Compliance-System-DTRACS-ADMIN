@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import TaskTabs from "../../../components/TaskTabs/TaskTabs";
 import { createSlug } from "../../../utils/idGenerator";
-import { API_BASE_URL } from "../../../api/api";
+import config from "../../../config";
 import "./TaskPage.css";
 
 const TaskPage = () => {
@@ -34,7 +34,7 @@ const TaskPage = () => {
   const fetchAssignmentsForTask = async (task_id, token) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/admin/task/assignments?task_id=${encodeURIComponent(task_id)}`,
+        `${config.API_BASE_URL}/admin/task/assignments?task_id=${encodeURIComponent(task_id)}`,
         {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
@@ -178,7 +178,7 @@ const TaskPage = () => {
         const token = currentUser?.token;
 
         const response = await fetch(
-          `${API_BASE_URL}/admin/tasks/all/focal_id/?user_id=${encodeURIComponent(selectedFocal)}`,
+          `${config.API_BASE_URL}/admin/tasks/all/focal_id/?user_id=${encodeURIComponent(selectedFocal)}`,
           {
             headers: {
               Authorization: token ? `Bearer ${token}` : "",

@@ -5,7 +5,7 @@ import VerificationModal from "../../components/AccountControlComponents/Account
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 import { toast } from "react-toastify";
 
-import { API_BASE_URL } from "../../api/api";
+import config from "../../config";
 
 const VerificationPage = () => {
   const { sortFilter } = useOutletContext();
@@ -19,8 +19,8 @@ const VerificationPage = () => {
     try {
       if (sortFilter === "All") {
         const [schoolResult, focalResult] = await Promise.allSettled([
-          fetch(`${API_BASE_URL}/admin/school/account/request`),
-          fetch(`${API_BASE_URL}/admin/focal/account/request`),
+          fetch(`${config.API_BASE_URL}/admin/school/account/request`),
+          fetch(`${config.API_BASE_URL}/admin/focal/account/request`),
         ]);
 
         let schoolAccounts = [];
@@ -50,9 +50,9 @@ const VerificationPage = () => {
       } else {
         let url;
         if (sortFilter === "School") {
-          url = `${API_BASE_URL}/admin/school/account/request`;
+          url = `${config.API_BASE_URL}/admin/school/account/request`;
         } else if (sortFilter === "Focal") {
-          url = `${API_BASE_URL}/admin/focal/account/request`;
+          url = `${config.API_BASE_URL}/admin/focal/account/request`;
         } else {
           setAccounts([]);
           setLoading(false);
@@ -110,7 +110,7 @@ const VerificationPage = () => {
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userId)}`,
+      `${config.API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userId)}`,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -147,7 +147,7 @@ const VerificationPage = () => {
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/admin/account/verification?user_id=${encodeURIComponent(userId)}`,
+      `${config.API_BASE_URL}/admin/account/verification?user_id=${encodeURIComponent(userId)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -5,7 +5,7 @@ import ConfirmDelete from "../../components/AccountControlComponents/AccountModa
 import { getInitials, stringToColor } from "../../utils/iconGenerator";
 import { toast } from "react-toastify";
 
-import { API_BASE_URL } from "../../api/api";
+import config from "../../config";
 
 const TerminationPage = () => {
   const { sortFilter } = useOutletContext();
@@ -22,8 +22,8 @@ const TerminationPage = () => {
 
       if (sortFilter === "All") {
         const [schoolResult, focalResult] = await Promise.allSettled([
-          fetch(`${API_BASE_URL}/admin/school/verified/accounts`),
-          fetch(`${API_BASE_URL}/admin/focal/verified/accounts`),
+          fetch(`${config.API_BASE_URL}/admin/school/verified/accounts`),
+          fetch(`${config.API_BASE_URL}/admin/focal/verified/accounts`),
         ]);
 
         // Process School Accounts
@@ -48,7 +48,7 @@ const TerminationPage = () => {
         }
         
       } else if (sortFilter === "School") {
-        const schoolRes = await fetch(`${API_BASE_URL}/admin/school/verified/accounts`);
+        const schoolRes = await fetch(`${config.API_BASE_URL}/admin/school/verified/accounts`);
         if (!schoolRes.ok) throw new Error(`Failed to fetch verified schools: ${schoolRes.status}`);
         const data = await schoolRes.json();
         schoolAccounts = (data || []).map((acc) => ({
@@ -57,7 +57,7 @@ const TerminationPage = () => {
           id: acc.user_id,
         }));
       } else if (sortFilter === "Focal") {
-        const focalRes = await fetch(`${API_BASE_URL}/admin/focal/verified/accounts`);
+        const focalRes = await fetch(`${config.API_BASE_URL}/admin/focal/verified/accounts`);
         if (!focalRes.ok) throw new Error(`Failed to fetch verified focals: ${focalRes.status}`);
         const data = await focalRes.json();
         focalAccounts = (data || []).map((acc) => ({
@@ -100,7 +100,7 @@ const TerminationPage = () => {
     : "/admin/focal/verified/account/delete/id/";
 
   try {
-    const url = `${API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userIdToDelete)}`;
+    const url = `${config.API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userIdToDelete)}`;
 
     const response = await fetch(url, {
       method: "DELETE",
