@@ -12,18 +12,12 @@ const SectionPage = () => {
   const designations = taskData[sectionId];
 
   const [focalList, setFocalList] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedFocal, setSelectedFocal] = useState(null);
 
   const isInTaskRoute = location.pathname.startsWith(`/sections/${sectionId}/task/`);
 
   useEffect(() => {
-    if (!designations || designations.length === 0) {
-      setLoading(false);
-      return;
-    }
-
     const fetchFocalData = async () => {
       try {
         const results = [];
@@ -35,6 +29,7 @@ const SectionPage = () => {
           );
 
           if (!res.ok) {
+            // No user assigned → skip further requests
             results.push({
               section_designation: designation,
               name: "Not yet assigned",
@@ -57,15 +52,16 @@ const SectionPage = () => {
             let assignmentsStatus = [];
             let documents = [];
 
-            // Step 2: Fetch task statistics (for pie chart)
+            // ✅ ONLY IF user_id exists, fetch task stats and documents
             if (userId) {
+              // Step 2: Fetch task statistics (for pie chart)
               const statsRes = await fetch(
                 `${API_BASE_URL}/admin/recharts/task/data?user_id=${encodeURIComponent(userId)}`
               );
               if (statsRes.ok) {
                 const statsData = await statsRes.json();
+                console.log(`[API Response - Task Stats for user_id: ${userId}]`, statsData);
 
-                // Extract task status for pie chart
                 const statusArray = statsData.task_status || [];
                 const focalStats = statusArray[0] || {};
 
@@ -75,7 +71,6 @@ const SectionPage = () => {
                   Ongoing: focalStats.ongoing || 0,
                 };
 
-                // Extract assignments_status for per-task progress calculation
                 assignmentsStatus = statsData.assignments_status || [];
               } else {
                 console.warn(`Failed to fetch task stats for user_id: ${userId}`);
@@ -88,41 +83,25 @@ const SectionPage = () => {
               if (docsRes.ok) {
                 documents = await docsRes.json();
 
-                // ✅ ENRICH DOCUMENTS WITH PROGRESS FROM assignments_status
+                // ✅ Enrich documents with progress from assignmentsStatus
                 documents = documents.map(doc => {
-                  // Find matching assignment by task_id
-                  const assignment = assignmentsStatus.find(a => a.task_id === doc.id);
+                  const assignment = assignmentsStatus.find(a => a.task_id === doc.task_id);
 
                   if (assignment) {
-                    const { complete, incomplete } = assignment;
+                    const { complete = 0, incomplete = 0 } = assignment;
                     const total = complete + incomplete;
-
-                    // Avoid division by zero
                     const progress = total > 0 ? Math.round((complete / total) * 100) : 0;
 
                     return {
                       ...doc,
-                      progress, // ✅ Inject computed progress
+                      progress,
                     };
                   }
 
-                  // If no assignment found, fallback to default based on task_status
-                  let fallbackProgress = 0;
-                  switch (doc.task_status) {
-                    case "COMPLETE":
-                      fallbackProgress = 100;
-                      break;
-                    case "ONGOING":
-                      fallbackProgress = 50;
-                      break;
-                    case "INCOMPLETE":
-                    default:
-                      fallbackProgress = 0;
-                  }
-
+                  console.warn(`No progress data available for task_id: ${doc.id}`);
                   return {
                     ...doc,
-                    progress: fallbackProgress,
+                    progress: 0,
                   };
                 });
               } else {
@@ -136,9 +115,10 @@ const SectionPage = () => {
               role: focal.office,
               user_id: userId,
               taskStatus: taskStatus,
-              documents: documents, // ✅ Now enriched with dynamic progress!
+              documents: documents,
             });
           } else {
+            // No user found → skip further requests
             results.push({
               section_designation: designation,
               name: "Not yet assigned",
@@ -150,41 +130,28 @@ const SectionPage = () => {
           }
         }
 
-        console.log("✅ Final focal list:", results);
-
         setFocalList(results);
 
-        // Auto-select first valid focal
+        // Auto-select first valid focal (with user_id)
         if (results.length > 0 && !selectedFocal) {
           const firstValidFocal = results.find(r => r.user_id);
           if (firstValidFocal) {
             setSelectedFocal(firstValidFocal.user_id);
           }
         }
-
-        setLoading(false);
       } catch (err) {
-        console.error("Error fetching focal ", err);
+        console.error("Error fetching focal data:", err);
         setError("Failed to load focal assignments.");
-        setLoading(false);
       }
     };
 
-    fetchFocalData();
-  }, [sectionId, designations]);
+    if (designations) {
+      fetchFocalData();
+    }
+  }, [sectionId, designations, selectedFocal]);
 
   if (error) return <div className="error">⚠️ {error}</div>;
   if (!designations) return <div>Invalid section ID</div>;
-
-  // ✅ RENDER LOADING SPINNER WHILE LOADING
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p className="loading-text">Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="focal-container">
@@ -192,13 +159,10 @@ const SectionPage = () => {
         <>
           {focalList.map((focal, index) => {
             const stats = [
-              { name: "Completed", value: focal.taskStatus.Completed },
-              { name: "Incomplete", value: focal.taskStatus.Incomplete },
-              { name: "Pending", value: focal.taskStatus.Ongoing },
+              { name: "Completed", value: focal.taskStatus.Completed || 0 },
+              { name: "Incomplete", value: focal.taskStatus.Incomplete || 0 },
+              { name: "Pending", value: focal.taskStatus.Ongoing || 0 },
             ];
-
-            console.log(`📊 Stats for ${focal.name}:`, stats);
-            console.log(`📄 Documents for ${focal.name}:`, focal.documents);
 
             const isSelected = focal.user_id === selectedFocal;
 
@@ -208,7 +172,7 @@ const SectionPage = () => {
                 section={focal.section_designation}
                 name={focal.name}
                 stats={stats}
-                documents={focal.documents} // ✅ Now includes calculated progress!
+                documents={focal.documents}
                 sectionId={sectionId}
                 id={focal.user_id}
                 isSelected={isSelected}

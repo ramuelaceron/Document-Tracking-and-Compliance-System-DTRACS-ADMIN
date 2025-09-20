@@ -6,20 +6,21 @@ import { API_BASE_URL } from "../../../api/api";
 import "./TaskPage.css";
 
 const TaskPage = () => {
+  const [hasLoaded, setHasLoaded] = useState(false); // 👈 Add this
   const [selectedSort, setSelectedSort] = useState("newest");
   const [tasks, setTasks] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+  
+  const currentUser = useMemo(() => {
+    const item = sessionStorage.getItem("currentUser");
+    return item ? JSON.parse(item) : null;
+  }, []); // 👈 Only parse once on mount
 
   // ✅ Get selectedFocal (which is now user_id) from Outlet context
   const { selectedFocal } = useOutletContext(); // 👈 This is the user_id!
-
-  // useEffect(() => {
-  //   console.log('🔍 TaskPage received selectedFocal (user_id):', selectedFocal);
-  // }, [selectedFocal]);
 
   const isOfficeWithoutSection = currentUser?.role === "office" && (
     !currentUser.section_designation ||
@@ -31,7 +32,6 @@ const TaskPage = () => {
   // ✅ CORRECTED: Fetch assignments for one task
   // This function now correctly parses the single array of assignment objects returned by the backend
   const fetchAssignmentsForTask = async (task_id, token) => {
-    // console.log('🔄 Fetching assignments for task_id:', task_id);
     try {
       const response = await fetch(
         `${API_BASE_URL}/admin/task/assignments?task_id=${encodeURIComponent(task_id)}`,
@@ -46,7 +46,9 @@ const TaskPage = () => {
         throw new Error(`Failed to fetch assignments for task ${task_id}: ${response.statusText}`);
       }
       const data = await response.json();
-      // console.log('✅ Assignments fetched for task_id:', task_id, data);
+
+      // ✅ LOG RAW ASSIGNMENTS
+      console.log(`[API Response - Assignments for task_id: ${task_id}]`, data);
 
       // ✅ PARSE THE BACKEND'S ACTUAL RESPONSE: An ARRAY of assignment objects
       const assignments = Array.isArray(data) ? data : [];
@@ -108,7 +110,6 @@ const TaskPage = () => {
 
   // ✅ OPTIMIZED: Fetch ALL task assignments in ONE parallel batch
   const enrichTasksWithAssignments = async (rawTasks, token) => {
-    // console.log('🔄 Extracting all task_ids for parallel assignment fetching...');
 
     // STEP 1: Collect ALL task objects across ALL sections
     const allTasks = []; // Store full task objects
@@ -122,8 +123,6 @@ const TaskPage = () => {
         });
       });
     });
-
-    // console.log(`✅ Found ${allTasks.length} total tasks to fetch assignments for.`);
 
     // STEP 2: Fetch ALL assignments in ONE parallel batch
     const assignmentPromises = allTasks.map((task) =>
@@ -157,21 +156,27 @@ const TaskPage = () => {
       enrichedTasks[sectionName] = enrichedSections;
     });
 
-    // console.log('✅ All assignments fetched and merged.');
     return enrichedTasks;
   };
 
   useEffect(() => {
+    // 🚫 Skip if no focal selected
+    if (!selectedFocal) {
+      setLoading(false);
+      return;
+    }
+
+    // 🚫 Skip if we already fetched tasks for this focal (optional optimization)
+    if (Object.keys(tasks).length > 0) {
+      console.log(`[INFO] Tasks already loaded for user_id: ${selectedFocal}. Skipping refetch.`);
+      return;
+    }
+
     const fetchAndEnrichTasks = async () => {
-      if (!selectedFocal) {
-        setLoading(false);
-        return;
-      }
       try {
         setLoading(true);
         const token = currentUser?.token;
 
-        // ✅ STEP 1: Fetch raw tasks for focal user
         const response = await fetch(
           `${API_BASE_URL}/admin/tasks/all/focal_id/?user_id=${encodeURIComponent(selectedFocal)}`,
           {
@@ -186,7 +191,8 @@ const TaskPage = () => {
         }
         const rawData = await response.json();
 
-        // ✅ STEP 2: Group by section (unchanged)
+        console.log(`[API Response - Raw Tasks for user_id: ${selectedFocal}]`, rawData);
+
         const groupedBySection = rawData.reduce((acc, task) => {
           const sectionName = task.section || "General";
           if (!acc[sectionName]) {
@@ -202,9 +208,9 @@ const TaskPage = () => {
           return acc;
         }, {});
 
-        // ✅ STEP 3: ENRICH WITH ASSIGNMENTS — THIS IS THE KEY! (Now optimized)
         const enrichedTasks = await enrichTasksWithAssignments(groupedBySection, token);
-        setTasks(enrichedTasks); // 👈 Now each task has correct schools_required, accounts_required, etc.
+        setTasks(enrichedTasks);
+        setHasLoaded(true); // 👈 SET THIS AFTER SUCCESSFUL LOAD
       } catch (err) {
         console.error("Error fetching and enriching tasks:", err);
         setError(err.message);
@@ -214,7 +220,7 @@ const TaskPage = () => {
     };
 
     fetchAndEnrichTasks();
-  }, [selectedFocal, currentUser]);
+  }, [selectedFocal, currentUser]); // Still depends on them, but currentUser is now memoized
 
   // ✅ Memoized computed values — unchanged
   const allOffices = useMemo(() => {
@@ -362,6 +368,8 @@ const TaskPage = () => {
           selectedSort,
           allOffices,
           selectedFocal,
+          loading,
+          hasLoaded, // 👈 ADD THIS
         }}
       />
     </div>

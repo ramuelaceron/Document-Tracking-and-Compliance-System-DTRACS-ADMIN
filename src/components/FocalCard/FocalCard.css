@@ -1,13 +1,14 @@
+
 .focal-card {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   margin: 0 5px;
   overflow: hidden;
-  width: 490px;
-  cursor: pointer;
-  margin-top: 20px;
-  margin-left: 20px;
+  width: 650px;
+  height: 400px;
+  margin-top: 30px;
+  margin-left: 40px;
 }
 
 .focal-header {
@@ -18,18 +19,10 @@
   padding: 16px;
 }
 
-.focal-header:hover{
-  text-decoration: underline;
-}
-
-.focal-avatar {
-  font-size: 48px;
-  margin-right: 12px;
-}
-
 .focal-header h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: 24px;
+  max-width: 350px;
 }
 
 .focal-header p {
@@ -41,6 +34,14 @@
 .focal-body {
   display: flex;
   padding: 16px;
+  padding-top: 30px;
+}
+
+.summary {
+  text-align: center;
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .focal-chart {
@@ -82,7 +83,7 @@
 
 /* Custom scrollbar for WebKit */
 .focal-documents::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 .focal-documents::-webkit-scrollbar-thumb {
   background: #ccc;
@@ -151,16 +152,74 @@
 }
 
 .focal-avatar-generated {
-  width: 48px;
-  height: 48px;
-  margin-right: 10PX;
+  width: 60px;
+  height: 60px;
+  margin-right: 20px;
+  margin-left: 5px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 30px;
   flex-shrink: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ✅ Arrow Button Styles */
+.focal-view-task-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto; /* Push to right */
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-size: 20px;
+}
+
+.focal-view-task-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(2px);
+}
+
+/* Optional: Add tooltip if you don't want native 'title' */
+.focal-view-task-btn::after {
+  position: absolute;
+  bottom: 125%;
+  right: 0;
+  background: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.focal-view-task-btn:hover::after {
+  opacity: 1;
+}
+
+/* Ensure header uses flex to align button to right */
+.focal-header {
+  display: flex;
+  align-items: center;
+  background: #1d2d5a;
+  color: white;
+  padding: 16px;
+  position: relative; /* For tooltip positioning */
+}
+
+.focal-header-left {
+  display: flex;
+  align-items: center;
+  flex: 1; /* Take remaining space */
 }

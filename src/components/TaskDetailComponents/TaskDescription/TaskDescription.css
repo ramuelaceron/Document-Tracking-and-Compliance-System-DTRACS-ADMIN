@@ -95,28 +95,26 @@
   color: #999;
 }
 
-/* ✅ Enhanced Task Link Styles */
-.task-link-container {
+/* ✅ Updated container for multiple links */
+.task-links-container {
   margin-top: 1.5rem;
   padding: 12px;
-  background-color: #f8f9fa;
-  border: 1px solid #e0e0e0;
   border-radius: 6px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
   font-size: 14px;
   color: #555;
 }
 
-.task-link-label {
+.task-links-container .task-link-label {
   font-weight: 600;
   color: #333;
-  white-space: nowrap;
 }
 
-.task-link {
-  flex: 1;
+/* ✅ Style each link */
+.task-links-container .task-link {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -124,22 +122,15 @@
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease, text-decoration 0.2s ease;
+  padding: 4px 0;
 }
 
-.task-link:hover {
+.task-links-container .task-link:hover {
   color: #0b7dda;
   text-decoration: underline;
 }
 
-.task-link:active,
-.task-link:focus {
-  outline: 2px solid #2196F3;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* Optional: Add a small external link icon after the URL */
-.task-link::after {
+.task-links-container .task-link::after {
   content: " ↗";
   font-size: 0.8em;
   vertical-align: middle;

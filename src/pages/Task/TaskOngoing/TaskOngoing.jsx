@@ -14,9 +14,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "./TaskOngoing.css";
 
 const TaskOngoing = () => {
-  // Get sorted tasks from context
-  const { upcomingTasks, selectedSort } = useOutletContext();
-  
+  // Get sorted tasks and loading state from context
+  const { upcomingTasks, selectedSort, loading, hasLoaded } = useOutletContext(); // 👈 Add hasLoaded
+
   // Group tasks by formatted creation date
   const groupedByDate = upcomingTasks.reduce((groups, task) => {
     const formattedDate = formatDate(task.creation_date);
@@ -41,13 +41,12 @@ const TaskOngoing = () => {
   const [openGroups, setOpenGroups] = useState(() =>
     sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {})
   );
-  
+
   useEffect(() => {
     if (sortedDates.length > 0 && Object.keys(openGroups).length === 0) {
       setOpenGroups(sortedDates.reduce((acc, date) => ({ ...acc, [date]: true }), {}));
     }
   }, [sortedDates, openGroups]);
-
 
   const toggleGroup = (date) => {
     setOpenGroups((prev) => ({
@@ -56,7 +55,6 @@ const TaskOngoing = () => {
     }));
   };
 
-  // Get appropriate empty message based on filter
   const getEmptyMessage = () => {
     switch (selectedSort) {
       case "today":
@@ -74,7 +72,16 @@ const TaskOngoing = () => {
     <div className="ongoing-app">
       <main className="ongoing-main">
 
-        {sortedDates.length > 0 ? (
+        {loading ? (
+          <div className="ongoing-loading">
+            <div className="ongoing-spinner"></div>
+            <p>Loading tasks...</p>
+          </div>
+        ) : hasLoaded && sortedDates.length === 0 ? ( // 👈 Only show empty message if loaded AND no tasks
+          <div className="ongoing-no-tasks">
+            {getEmptyMessage()}
+          </div>
+        ) : (
           sortedDates.map((date) => {
             const tasks = groupedByDate[date];
             const weekday = getWeekday(date);
@@ -88,7 +95,6 @@ const TaskOngoing = () => {
                 >
                   <span className="ongoing-date-bold">{date}</span>
                   <span className="ongoing-weekday"> ({weekday})</span>
-
                   <div className="ongoing-header-actions">
                     <span className="ongoing-task-count">{tasks.length}</span>
                     <span className="ongoing-dropdown-arrow">
@@ -101,7 +107,7 @@ const TaskOngoing = () => {
                   <div className="ongoing-task-list">
                     {tasks.map((task) => {
                       const { total, completed } = getTaskCompletionStats(task);
-                      
+
                       return (
                         <div className="ongoing-task-item" key={task.task_id}>
                           <div className="ongoing-task-header">
@@ -162,11 +168,8 @@ const TaskOngoing = () => {
               </div>
             );
           })
-        ) : (
-          <div className="ongoing-no-tasks">
-            {getEmptyMessage()}
-          </div>
         )}
+
       </main>
 
       <ToastContainer

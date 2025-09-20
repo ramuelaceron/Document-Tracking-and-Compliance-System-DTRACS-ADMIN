@@ -1,8 +1,10 @@
-
 .task-layout {
-  margin-top: 10px;
+  margin-top: 5px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  max-width: none; /* ❌ Remove max-width limit */
+  width: 100%; /* 👈 Stretch to full container width */
+  padding: 0 20px; /* Optional: add some horizontal padding */
+  box-sizing: border-box; /* Ensure padding is included in width */
 }
-

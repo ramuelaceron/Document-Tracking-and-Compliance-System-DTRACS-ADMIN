@@ -52,8 +52,8 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
   const actualStatus = isCompleted ? "COMPLETE" : (task?.task_status || "ONGOING");
   const statusColor = getStatusColor(actualStatus);
 
-  // Extract task-level link
-  const taskLink = task?.links || null;
+  // Extract task-level link(s)
+  const taskLinks = task?.links || null;
 
   return (
     <div className="task-description">
@@ -95,18 +95,37 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
         {description || task?.description || "No description provided."}
       </div>
 
-      {/* ✅ NEW: Task-Level Attachment Link */}
-      {taskLink && (
+      {/* ✅ Enhanced: Handle Multiple Links */}
+      {Array.isArray(taskLinks) && taskLinks.length > 0 && (
+        <div className="task-links-container">
+          <span className="task-link-label">Links:</span>
+          {taskLinks.map((link, index) => (
+            <div key={index} className="task-link-item">
+              <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="task-link"
+                title="Open link in new tab"
+              >
+                {link}
+              </a>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!Array.isArray(taskLinks) && taskLinks && (
         <div className="task-link-container">
           <span className="task-link-label">Link:</span>
           <a
-            href={taskLink}
+            href={taskLinks}
             target="_blank"
             rel="noopener noreferrer"
             className="task-link"
             title="Open task file in new tab"
           >
-            {taskLink}
+            {taskLinks}
           </a>
         </div>
       )}

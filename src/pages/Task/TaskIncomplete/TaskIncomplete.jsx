@@ -12,7 +12,7 @@ import "./TaskIncomplete.css";
 
 const TaskIncomplete = () => {
   // ✅ Get pre-filtered past-due tasks and selected sort from ToDoPage layout
-  const { pastDueTasks, selectedSort } = useOutletContext();
+  const { pastDueTasks, selectedSort, loading, hasLoaded } = useOutletContext(); // 👈 Add hasLoaded
 
   // Group tasks by formatted creation date
   const groupedByDate = pastDueTasks.reduce((groups, task) => {
@@ -72,8 +72,16 @@ const TaskIncomplete = () => {
   return (
     <div className="incomplete-app">
       <main className="incomplete-main">
-        {/* Task List Grouped by creation date */}
-        {sortedDates.length > 0 ? (
+        {loading ? (
+          <div className="incomplete-loading">
+            <div className="incomplete-spinner"></div>
+            <p>Loading tasks...</p>
+          </div>
+        ) : hasLoaded && sortedDates.length === 0 ? ( // 👈 Only show empty message if loaded AND no tasks
+          <div className="incomplete-no-tasks">
+            {getEmptyMessage()}
+          </div>
+        ) : (
           sortedDates.map((date) => {
             const tasks = groupedByDate[date];
             const weekday = getWeekday(date);
@@ -163,10 +171,6 @@ const TaskIncomplete = () => {
               </div>
             );
           })
-        ) : (
-          <div className="incomplete-no-tasks">
-            {getEmptyMessage()}
-          </div>
         )}
       </main>
     </div>

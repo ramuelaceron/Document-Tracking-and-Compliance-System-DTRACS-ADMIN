@@ -37,7 +37,7 @@ function App() {
         </Route>
 
         <Route path="/task/:sectionId/:taskSlug" element={<TaskDetailPage />} />
-        <Route path="/task/:sectionId/:taskSlug/attachments" element={<AttachmentsPage />} /> 
+        <Route path="/task/:sectionId/:taskSlug/attachments" element={<AttachmentsPage />} />
 
         <Route path="/registered-schools" element={<RegisteredSchools />} />
         <Route path="/schools/:schoolSlug" element={<SchoolAccDisplay />} />

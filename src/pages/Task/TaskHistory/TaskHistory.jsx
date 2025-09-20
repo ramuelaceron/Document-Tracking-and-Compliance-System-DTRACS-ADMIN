@@ -12,7 +12,7 @@ import "./TaskHistory.css";
 
 const TaskHistory = () => {
   // ✅ Get pre-filtered completed tasks and selected sort from ToDoPage layout
-  const { completedTasks, selectedSort } = useOutletContext();
+  const { completedTasks, selectedSort, loading, hasLoaded } = useOutletContext(); // 👈 Add hasLoaded
 
   // Group tasks by formatted completion date
   const groupedByDate = completedTasks.reduce((groups, task) => {
@@ -73,8 +73,16 @@ const TaskHistory = () => {
   return (
     <div className="history-app">
       <main className="history-main">
-        {/* Task List Grouped by completion date */}
-        {sortedDates.length > 0 ? (
+        {loading ? (
+          <div className="history-loading">
+            <div className="history-spinner"></div>
+            <p>Loading tasks...</p>
+          </div>
+        ) : hasLoaded && sortedDates.length === 0 ? ( // 👈 Only show empty message if loaded AND no tasks
+          <div className="history-no-tasks">
+            {getEmptyMessage()}
+          </div>
+        ) : (
           sortedDates.map((date) => {
             const tasks = groupedByDate[date];
             const weekday = getWeekday(date);
@@ -166,10 +174,6 @@ const TaskHistory = () => {
               </div>
             );
           })
-        ) : (
-          <div className="history-no-tasks">
-            {getEmptyMessage()}
-          </div>
         )}
       </main>
     </div>
