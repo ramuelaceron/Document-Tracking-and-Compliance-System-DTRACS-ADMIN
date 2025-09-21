@@ -197,26 +197,27 @@ const SchoolStats = ({ task: propTask, taskId: propTaskId, sectionId: propSectio
             };
           }
 
-          // ✅ Ensure attachments array exists with URL (mock if backend didn’t provide it)
-          const attachmentUrl = account.link || generateMockAttachmentLink(
-            task.task_id,
-            account.account_name,
-            account.school_name
-          );
+          // Use the first link from the links array, or fallback to mock
+          const attachmentUrl = Array.isArray(account.links) && account.links.length > 0
+            ? account.links[0]
+            : generateMockAttachmentLink(task.task_id, account.account_name, account.school_name);
 
+          const attachments = [
+            {
+              url: attachmentUrl,
+              name: "Submission File",
+              type: "application/octet-stream"
+            }
+          ];
+
+          // Add account with proper attachments
           schoolGroups[account.school_name].accounts.push({
             id: `${task.task_id}-${account.school_id || account.school_name}-${account.account_id || account.account_name}`,
             accountId: account.account_id || account.account_name,
             assignedTo: account.account_name,
             status: account.status || "ONGOING",
             remarks: account.remarks || "",
-            attachments: [
-              {
-                url: attachmentUrl,
-                name: "Submission File",
-                type: "application/octet-stream"
-              }
-            ]
+            attachments: attachments
           });
         });
         
