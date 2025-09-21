@@ -51,33 +51,33 @@ const RegisteredSchools = () => {
   }
 
   return (
-    <div className="admin-section">
+    <div className="admin-school-section">
       {/* Header */}
-      <div className="school-header">
-        <h2 className="school-title">Schools</h2>
+      <div className="admin-school-header">
+        <h2 className="admin-school-title">Schools</h2>
       </div>
 
       {/* List of Schools */}
-      <div className="school-list">
+      <div className="admin-school-list">
         {schools.map((school, index) => (
-          <div className="school-item" key={index}>
+          <div className="admin-school-item" key={index}>
             {/* School Info: Logo + Name + Address */}
-            <div className="school-info">
+            <div className="admin-school-info">
               <img
                 src={school.logo}
                 alt={`${school.school_name} logo`}
-                className="school-logo"
+                className="admin-school-logo"
               />
-              <div className="school-text">
-                <span className="schoolname">{school.school_name}</span>
-                <p className="school-address">{school.school_address}</p>
+              <div className="admin-school-text">
+                <span className="admin-schoolname">{school.school_name}</span>
+                <p className="admin-school-address">{school.school_address}</p>
               </div>
             </div>
 
             {/* Clickable Account Count → Links to specific school's accounts */}
-            <Link to={`/schools/${school.slug}`} className="account-count-link" style={{ textDecoration: 'none' }}>
-              <div className="account-count">
-                <FaRegUser className="account-image" />
+            <Link to={`/schools/${school.slug}`} className="admin-account-count-link" style={{ textDecoration: 'none' }}>
+              <div className="admin-account-count">
+                <FaRegUser className="admin-account-image" />
                 <span>{school.accountCount} Accounts</span> {/* ✅ Real count */}
               </div>
             </Link>

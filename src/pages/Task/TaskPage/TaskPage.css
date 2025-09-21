@@ -7,4 +7,5 @@
   width: 100%; /* 👈 Stretch to full container width */
   padding: 0 20px; /* Optional: add some horizontal padding */
   box-sizing: border-box; /* Ensure padding is included in width */
+  margin-left: -20px;
 }

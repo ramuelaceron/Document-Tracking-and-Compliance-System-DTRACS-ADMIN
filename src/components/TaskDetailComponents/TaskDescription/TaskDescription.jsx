@@ -1,5 +1,6 @@
 import React from "react";
 import { PiClipboardTextBold } from "react-icons/pi";
+import DOMPurify from 'dompurify';
 import "./TaskDescription.css";
 
 // Utility to format date
@@ -91,9 +92,12 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
       </div>
 
       {/* Description */}
-      <div className="task-body">
-        {description || task?.description || <em>No description</em>}
-      </div>
+      <div 
+        className="task-body"
+        dangerouslySetInnerHTML={{ 
+          __html: DOMPurify.sanitize(description || task?.description || "<em>No description</em>") 
+        }}
+      />
 
       
       {/* ✅ Enhanced: Handle Multiple Links */}

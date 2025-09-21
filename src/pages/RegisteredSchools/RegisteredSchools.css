@@ -1,14 +1,14 @@
 
-.admin-section {
+.admin-school-section {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 1200px;
   padding: 2rem 2rem;
-  padding-top: 4rem;
+  margin-top: -50px;
 }
 
-.school-header {
+.admin-school-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18,15 +18,15 @@
   border-bottom: 1px solid #B7B6B6;
 }
 
-.school-title {
+.admin-school-title {
   font-family: 'Roboto-Bold', Helvetica;
   font-size: 24px;
   font-weight: 700;
   color: #000000;
 }
 
-/* School list container */
-.school-list {
+/* admin-School list container */
+.admin-school-list {
   padding-top:-2.0rem;
   padding-left:2.5rem;
   display: flex;
@@ -34,28 +34,28 @@
   gap: 0.1rem;
 }
 
-.school-info {
+.admin-school-info {
   display: flex;
   align-items: center; 
   gap: 12px;          
 }
-.schoolname{
+.admin-schoolname{
     padding-top:0.5rem;
 }
-/* Individual school item */
-.school-item {
+/* Individual admin-school item */
+.admin-school-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start; /* Aligns both sides to the top */
   padding: 10px 0;
 }
 
-.school-item:last-child {
+.admin-school-item:last-child {
   border-bottom: none;
 }
 
-/* School name */
-.schoolname {
+/* admin-School name */
+.admin-schoolname {
   font-family: 'Source Sans 3-Regular', Helvetica;
   font-size: 16px;
   font-weight: 500;
@@ -63,7 +63,7 @@
   margin: 0;
 }
 
-.school-icon {
+.admin-school-icon {
   width: 30px;
   height: 30px;
   background-color: #f0f0f0;
@@ -75,7 +75,7 @@
   font-size: 12px;
 }
 
-.school-logo {
+.admin-school-logo {
   width: 50px;
   height: 50px;
   border-radius: 8px;
@@ -83,7 +83,7 @@
   flex-shrink: 0;
 }
 
-.account-count {
+.admin-account-count {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -92,20 +92,20 @@
   color: #757575;
 }
 
-.account-image {
+.admin-account-image {
   width: 14px;
   height: 14px;
   color: #757575;
   margin-right: 5px;
 }
 
-.school-text {
+.admin-school-text {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.school-address {
+.admin-school-address {
   font-family: 'Source Sans 3-Regular', Helvetica;
   font-size: 12px;
   color: #555;
@@ -113,7 +113,7 @@
   line-height: 1.3;
 }
 
-.account-count-link {
+.admin-account-count-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -124,16 +124,85 @@
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.account-count-link:hover {
+.admin-account-count-link:hover {
   color: #0056b3;
   cursor: pointer;
 }
 
-.account-count-link:hover .account-image {
+.admin-account-count-link:hover .account-image {
   color: #0056b3;
 }
 
-.account-count span:hover{
+.admin-account-count span:hover{
   text-decoration: underline;
   color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .admin-section {
+    padding: clamp(1rem, 3vw, 2rem);
+    padding-top: clamp(2rem, 5vw, 4rem);
+  }
+
+  .admin-school-header {
+    flex-direction: column;   /* stack title + actions */
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-top: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .admin-school-title {
+    font-size: clamp(24px, 4vw, 24px);
+    position:relative;
+    top: 3.5rem;
+    right: 8.5rem;
+  }
+
+  .admin-school-list {
+    padding-left: clamp(0.5rem, 2vw, 2.5rem);
+    gap: 0.5rem;
+    position:relative;
+    top: 4.5rem;
+  }
+
+  .admin-school-item {
+    flex-wrap: wrap;  /* auto wrap kapag maliit ang space */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    bottom: 10px;
+  }
+
+  .admin-school-info {
+    gap: clamp(6px, 2vw, 12px);
+  }
+
+  .admin-school-logo {
+    width: clamp(35px, 8vw, 50px);
+    height: clamp(35px, 8vw, 50px);
+  }
+
+  .admin-schoolname {
+    font-size: clamp(13px, 3.5vw, 16px);
+  }
+
+  .admin-school-address {
+    font-size: clamp(10px, 2.5vw, 12px);
+  }
+
+  .admin-account-count,
+  .admin-account-count-link {
+    font-size: clamp(11px, 3vw, 14px);
+    gap: 0.20rem;
+    position: relative;
+    bottom: 5px;
+  }
+
+  .admin-account-image {
+    width: clamp(12px, 3vw, 14px);
+    height: clamp(12px, 3vw, 14px);
+  }
 }
