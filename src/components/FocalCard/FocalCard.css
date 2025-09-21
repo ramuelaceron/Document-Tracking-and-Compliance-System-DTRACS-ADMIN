@@ -223,3 +223,17 @@
   align-items: center;
   flex: 1; /* Take remaining space */
 }
+
+.no-tasks-message {
+  font-style: italic;
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+  text-align: center; /* Centers text horizontally */
+  display: flex;
+  justify-content: center; /* Centers content horizontally in flex container */
+  align-items: center; /* Centers content vertically in flex container */
+  height: 100%; /* Takes full height of parent container */
+  width: 100%; /* Takes full width of parent container */
+  margin-top: 30px;
+}

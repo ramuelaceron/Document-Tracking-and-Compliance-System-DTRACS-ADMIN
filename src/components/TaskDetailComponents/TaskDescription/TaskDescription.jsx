@@ -92,9 +92,10 @@ const TaskDescription = ({ task, creator_name, creation_date, completion_date, d
 
       {/* Description */}
       <div className="task-body">
-        {description || task?.description || "No description provided."}
+        {description || task?.description || <em>No description</em>}
       </div>
 
+      
       {/* ✅ Enhanced: Handle Multiple Links */}
       {Array.isArray(taskLinks) && taskLinks.length > 0 && (
         <div className="task-links-container">

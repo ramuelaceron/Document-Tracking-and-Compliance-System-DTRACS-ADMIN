@@ -67,12 +67,8 @@ const FocalCard = ({ section, name, stats, documents, sectionId, id, isSelected,
     }
   };
 
-  if (!stats || stats.length === 0) {
-    return <div className="focal-card">No data available</div>;
-  }
-
-  // ✅ Calculate total for percentage
-  const total = stats.reduce((sum, entry) => sum + entry.value, 0);
+  // Check if there are no documents/tasks available
+  const hasTasks = documents && documents.length > 0;
 
   return (
     <div className={`focal-card ${isSelected ? 'focal-card-selected' : ''}`}>
@@ -132,63 +128,68 @@ const FocalCard = ({ section, name, stats, documents, sectionId, id, isSelected,
 
       {isPersonnelAssigned && (
         <div className="focal-body">
-          <div className="focal-chart">
-            <h4 className="summary">Summary</h4>
-            
-            <div style={{ width: 180, height: 180, margin: '0 auto' }}>
-              <PieChart width={180} height={180}>
-                <Pie
-                  data={stats}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={85}
-                  dataKey="value"
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  {stats.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                  ))}
-                </Pie>
-                {/* ✅ Custom Tooltip */}
-                <Tooltip content={<CustomTooltip total={total} />} />
-              </PieChart>
+          {/* Display No tasks at the moment in italic when there are no documents */}
+          {!hasTasks ? (
+            <div className="no-tasks-message">
+              <em>No tasks at the moment</em>
             </div>
+          ) : (
+            <>
+              <div className="focal-chart">
+                <h4 className="summary">Summary</h4>
+                
+                <div style={{ width: 180, height: 180, margin: '0 auto' }}>
+                  <PieChart width={180} height={180}>
+                    <Pie
+                      data={stats}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={85}
+                      dataKey="value"
+                      startAngle={90}
+                      endAngle={-270}
+                    >
+                      {stats.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                      ))}
+                    </Pie>
+                    {/* ✅ Custom Tooltip */}
+                    <Tooltip content={<CustomTooltip total={stats.reduce((sum, entry) => sum + entry.value, 0)} />} />
+                  </PieChart>
+                </div>
 
-            <div className="focal-legend">
-              <span><span className="legend-box completed"></span>Completed</span>
-              <span><span className="legend-box incomplete"></span>Incomplete</span>
-              <span><span className="legend-box pending"></span>Pending</span>
-            </div>
-          </div>
+                <div className="focal-legend">
+                  <span><span className="legend-box completed"></span>Completed</span>
+                  <span><span className="legend-box incomplete"></span>Incomplete</span>
+                  <span><span className="legend-box pending"></span>Pending</span>
+                </div>
+              </div>
 
-          <div className="focal-documents">
-            {documents.length > 0 ? (
-              documents.map((doc, idx) => (
-                <button 
-                  key={idx} 
-                  className="focal-document"
-                  onClick={() => handleDocumentClick(doc)}
-                  disabled={!isPersonnelAssigned}
-                  style={!isPersonnelAssigned ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
-                >
-                  <div className="subject-title">{doc.title}</div>
-                  <div className="progress-wrapper">
-                    <div className="progress-bar">  
-                      <div
-                        className="progress-fill"
-                        style={{ width: `${doc.progress}%` }}
-                      ></div>   
+              <div className="focal-documents">
+                {documents.map((doc, idx) => (
+                  <button 
+                    key={idx} 
+                    className="focal-document"
+                    onClick={() => handleDocumentClick(doc)}
+                    disabled={!isPersonnelAssigned}
+                    style={!isPersonnelAssigned ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
+                  >
+                    <div className="subject-title">{doc.title}</div>
+                    <div className="progress-wrapper">
+                      <div className="progress-bar">  
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${doc.progress}%` }}
+                        ></div>   
+                      </div>
+                      <span className="progress-value">{doc.progress}%</span>
                     </div>
-                    <span className="progress-value">{doc.progress}%</span>
-                  </div>
-                </button>
-              ))
-            ) : (
-              <p className="no-documents">No tasks assigned</p>
-            )}
-          </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
