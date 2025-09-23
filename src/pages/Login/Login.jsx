@@ -15,15 +15,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Optional: show loading state
+  const [isHovering, setIsHovering] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
-
-    // console.log("Submitting login:", { email, password });
 
     try {
       const response = await fetch(`${config.API_BASE_URL}/admin/login`, {
@@ -42,7 +39,6 @@ const Login = () => {
       if (!response.ok) {
         // Handle error response
         setError(data.message || "Invalid credentials");
-        setLoading(false);
         return;
       }
 
@@ -63,7 +59,6 @@ const Login = () => {
       setError("Unable to connect to server. Please try again later.");
       console.error("Login error:", err);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -107,7 +102,6 @@ const Login = () => {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
                   required
                 />
               </div>
@@ -125,14 +119,12 @@ const Login = () => {
                   placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
                   required
                 />
                 <button
                   type="button"
                   className="login-toggle-password"
                   onClick={togglePasswordVisibility}
-                  disabled={loading}
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -147,16 +139,15 @@ const Login = () => {
             <button
               type="submit"
               className="login-button"
-              disabled={loading}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+              style={{
+                backgroundColor: isHovering ? '#1e4a76' : '#2563eb',
+                transition: 'background-color 0.2s ease'
+              }}
             >
-              {loading ? (
-                "Logging in..."
-              ) : (
-                <>
-                  <FiLogIn className="login-icon" />
-                  Log in
-                </>
-              )}
+              <FiLogIn className="login-icon" />
+                Log in
             </button>
           </form>
 

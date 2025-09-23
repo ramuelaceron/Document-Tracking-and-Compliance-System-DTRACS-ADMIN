@@ -116,10 +116,15 @@ const Header = ({ toggleSidebar }) => {
   };
 
   const handleSignOut = () => {
+    // Clear session
     sessionStorage.removeItem("currentUser");
     setCurrentUser(null);
     setAvatarProps(null);
-    navigate("/");
+    console.log("Admin signing out...");
+
+    // ✅ Use replace to prevent back-navigation
+    window.location.replace("/login");
+
     setIsDropdownOpen(false);
   };
 

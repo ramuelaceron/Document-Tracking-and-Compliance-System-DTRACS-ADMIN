@@ -293,10 +293,8 @@
 
 .login-error {
   color: #ff4d4d; 
-  /* background-color: #ffe6e6;  */
   padding: 0.5rem;
   border-radius: 0.3rem;
-  /* border: 1px solid #ffcccc;  */
   font-size: 0.9rem;
   text-align: center;
 }

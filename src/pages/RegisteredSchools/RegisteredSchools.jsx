@@ -46,10 +46,6 @@ const RegisteredSchools = () => {
     fetchAccountCounts();
   }, []);
 
-  if (loading) {
-    return <div className="admin-section">Loading schools...</div>;
-  }
-
   return (
     <div className="admin-school-section">
       {/* Header */}
