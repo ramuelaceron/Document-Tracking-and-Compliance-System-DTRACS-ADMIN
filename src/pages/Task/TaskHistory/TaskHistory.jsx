@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { PiClipboardTextBold } from "react-icons/pi";
@@ -11,8 +13,7 @@ import {
 import "./TaskHistory.css";
 
 const TaskHistory = () => {
-  // ✅ Get pre-filtered completed tasks and selected sort from ToDoPage layout
-  const { completedTasks, selectedSort, loading, hasLoaded } = useOutletContext(); // 👈 Add hasLoaded
+  const { completedTasks, selectedSort, loading, hasLoaded } = useOutletContext();
 
   // Group tasks by formatted completion date
   const groupedByDate = completedTasks.reduce((groups, task) => {
@@ -48,7 +49,6 @@ const TaskHistory = () => {
     }
   }, [sortedDates, openGroups]);
 
-
   const toggleGroup = (date) => {
     setOpenGroups((prev) => ({
       ...prev,
@@ -56,7 +56,6 @@ const TaskHistory = () => {
     }));
   };
 
-  // Get appropriate empty message based on filter
   const getEmptyMessage = () => {
     switch (selectedSort) {
       case "today":
@@ -78,7 +77,7 @@ const TaskHistory = () => {
             <div className="history-spinner"></div>
             <p>Loading tasks...</p>
           </div>
-        ) : hasLoaded && sortedDates.length === 0 ? ( // 👈 Only show empty message if loaded AND no tasks
+        ) : hasLoaded && sortedDates.length === 0 ? (
           <div className="history-no-tasks">
             {getEmptyMessage()}
           </div>
@@ -110,9 +109,17 @@ const TaskHistory = () => {
                     {tasks.map((task) => {
                       const { total, completed } = getTaskCompletionStats(task);
                       const completionDate = task.completion_date || task.creation_date;
-                      
+
+                      // ✅ Determine if task was completed LATE
+                      const isLate = task.deadline && completionDate
+                        ? new Date(completionDate) > new Date(task.deadline)
+                        : false;
+
                       return (
-                        <div className="history-task-item" key={task.task_id}>
+                        <div
+                          className={`history-task-item ${isLate ? 'history-late' : ''}`}
+                          key={task.task_id}
+                        >
                           <div className="history-task-header">
                             <div className="history-task-icon">
                               <PiClipboardTextBold className="icon-lg" />
@@ -128,6 +135,9 @@ const TaskHistory = () => {
                             <div className="history-task-completion">
                               Completed on {formatDate(completionDate)} at{" "}
                               <span className="history-time">{formatTime(completionDate)}</span>
+                              {isLate && (
+                                <span className="history-late-badge"> (Late)</span>
+                              )}
                             </div>
                           </div>
 

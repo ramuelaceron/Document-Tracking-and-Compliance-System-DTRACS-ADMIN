@@ -115,17 +115,42 @@ const Header = ({ toggleSidebar }) => {
     setIsDropdownOpen(false);
   };
 
-  const handleSignOut = () => {
-    // Clear session
-    sessionStorage.removeItem("currentUser");
-    setCurrentUser(null);
-    setAvatarProps(null);
-    console.log("Admin signing out...");
+  const handleSignOut = async () => {
+    try {
+      const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+      const accessToken = currentUser?.access_token;
 
-    // ✅ Use replace to prevent back-navigation
-    window.location.replace("/login");
+      if (!accessToken) {
+        console.warn("No access token found. Clearing session anyway.");
+      } else {
+        // Call the logout endpoint
+        const response = await fetch("/api/auth/logout", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Important: sends cookies with the request
+        });
 
-    setIsDropdownOpen(false);
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Logout failed:", errorData.detail || response.statusText);
+          // Even if backend fails, we still clear client-side session for security
+        }
+      }
+    } catch (err) {
+      console.error("Error during logout request:", err);
+      // Proceed to clear session anyway
+    } finally {
+      // ✅ Clear client-side session
+      sessionStorage.removeItem("currentUser");
+      setCurrentUser(null);
+      setAvatarProps(null);
+
+      // ✅ Hard redirect to login (prevents back navigation)
+      window.location.replace("/login");
+    }
   };
 
   if (!currentUser) {

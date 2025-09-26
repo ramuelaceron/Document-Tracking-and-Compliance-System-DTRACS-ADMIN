@@ -23,7 +23,8 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch(`${config.API_BASE_URL}/admin/login`, {
+      // Step 1: Login to get access token
+      const loginResponse = await fetch(`${config.API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,31 +35,42 @@ const Login = () => {
         }),
       });
 
-      const data = await response.json();
+      const loginData = await loginResponse.json();
 
-      if (!response.ok) {
-        // Handle error response
-        setError(data.message || "Invalid credentials");
+      if (!loginResponse.ok) {
+        setError(loginData.detail || loginData.message || "Invalid credentials");
         return;
       }
 
-      // ✅ Login successful
-      // Store user data in sessionStorage
-      sessionStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          ...data,
-          email, // take from the login input
-        })
-      );
+      const { access_token } = loginData;
+      if (!access_token) {
+        throw new Error("No access token received");
+      }
 
-      // Redirect to sections
-      navigate("/sections");
+      // ✅ Step 2: Fetch full user profile using NEW unified endpoint
+      const profileResponse = await fetch(`${config.API_BASE_URL}/auth/get/current/user`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${access_token}`,
+        },
+      });
+
+      if (!profileResponse.ok) {
+        throw new Error("Failed to load user profile");
+      }
+
+      const fullUserData = await profileResponse.json();
+      console.log("Full user data from backend:", fullUserData); // 👈 Add this
+
+      // Store full user data
+      sessionStorage.setItem("currentUser", JSON.stringify(fullUserData));
+
+      // ✅ Redirect to admin section (adjust path as needed)
+      navigate("/sections"); // or "/sections" if that's your admin home
+
     } catch (err) {
-      // Network error or server unreachable
-      setError("Unable to connect to server. Please try again later.");
+      setError(err.message || "Unable to connect to server. Please try again later.");
       console.error("Login error:", err);
-    } finally {
     }
   };
 
