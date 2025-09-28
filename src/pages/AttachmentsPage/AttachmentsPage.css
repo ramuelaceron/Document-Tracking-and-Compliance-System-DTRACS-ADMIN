@@ -1,109 +1,68 @@
 /* src/pages/AttachmentsPage/AttachmentsPage.css */
-
 .attachments-page {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  min-height: calc(100vh - 60px);
-  display: flex;
-  flex-direction: column;
-}
-
-.attachments-container {
-  flex: 1;
-  padding: 40px;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background-color: #ffffff;
-  overflow-y: auto;
-  margin-top: 32px;
+  min-height: 100vh;
+  padding: 74px 0 40px;
+  color: #202124;
 }
 
 .attachments-back-btn {
   background: none;
   border: none;
-  color: #000;
-  font-size: 16px;
+  color: #1a73e8;
+  font-size: 15px;
+  font-weight: 500;
   cursor: pointer;
-  padding: 8px;
-  margin-bottom: 30px;
-  margin-top: -42px;
-  margin-left: -20px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: inherit;
-  line-height: 1;
+  padding: 0 24px;
+  margin-bottom: 24px;
   text-decoration: none;
-  transition: text-decoration 0.2s ease;
+  transition: color 0.2s;
+  font-family: inherit;
+  width: fit-content;
 }
 
 .attachments-back-btn:hover {
+  color: #0d47a1;
   text-decoration: underline;
 }
 
 .attachments-header {
-  margin-bottom: 30px;
+  padding: 0 24px;
+  margin-bottom: 24px;
 }
 
 .attachments-header h1 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 8px;
 }
 
 .subtitle {
-  color: #666;
   font-size: 14px;
+  color: #5f6368;
+  margin: 0 0 8px;
 }
 
-.attachment-link-container {
-  margin: 30px 0;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.label {
-  color: #555;
-  margin-bottom: 10px;
+.attachments-count {
+  font-size: 13px;
+  color: #5f6368;
+  margin: 0;
   font-weight: 500;
 }
 
-.attachment-link {
-  display: block;
-  word-break: break-all;
-  color: #2196F3;
-  text-decoration: none;
-  font-size: 16px;
-  font-family: monospace;
-  padding: 12px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-top: 8px;
-  transition: color 0.2s;
-}
+/* Responsive */
+@media (max-width: 600px) {
+  .attachments-page {
+    padding: 64px 0 32px;
+  }
 
-.attachment-link:hover {
-  color: #1976D2;
-  text-decoration: underline;
-}
-
-.open-link-btn {
-  background: #2196F3;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.open-link-btn:hover {
-  background: #1976D2;
-}
-
-.no-attachments {
-  text-align: center;
-  padding: 40px;
-  color: #666;
+  .attachments-back-btn,
+  .attachments-header {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }

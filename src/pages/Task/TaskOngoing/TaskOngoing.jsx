@@ -71,7 +71,6 @@ const TaskOngoing = () => {
   return (
     <div className="ongoing-app">
       <main className="ongoing-main">
-
         {loading ? (
           <div className="ongoing-loading">
             <div className="ongoing-spinner"></div>

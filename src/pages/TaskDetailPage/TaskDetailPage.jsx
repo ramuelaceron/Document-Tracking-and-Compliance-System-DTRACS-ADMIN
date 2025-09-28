@@ -1,18 +1,16 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import "./TaskDetailPage.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify"; // Removed unused 'toast'
 import "react-toastify/dist/ReactToastify.css";
 import { IoChevronBackOutline } from "react-icons/io5";
 
-// Components
+// ✅ Correct paths based on your folder structure
 import TaskDescription from "../../components/TaskDetailComponents/TaskDescription/TaskDescription";
 import SchoolStats from "../../components/TaskDetailComponents/SchoolStats/SchoolStats";
 
-// Mock Data
 import { taskData } from "../../data/taskData";
-
-// API
 import config from "../../config";
 
 const TaskDetailPage = () => {
@@ -23,18 +21,14 @@ const TaskDetailPage = () => {
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isLate, setIsLate] = useState(false);
 
-  // Use useRef to prevent unnecessary re-renders due to object changes
   const currentUserRef = useRef(JSON.parse(sessionStorage.getItem("currentUser")) || null);
   const selectedFocal = currentUserRef.current?.user_id;
+  const token = currentUserRef.current?.token;
 
-  // Extract initial task from state
   let initialTask = state?.taskData || null;
 
-  // Fallback: Try to find task in taskData
   if (!initialTask && sectionId) {
     const section = taskData[sectionId];
     if (section && Array.isArray(section)) {
@@ -63,7 +57,6 @@ const TaskDetailPage = () => {
     }
   }
 
-  // Fetch assignments for THIS SINGLE task if needed
   const fetchAssignmentsForSingleTask = async (task_id, token) => {
     try {
       const response = await fetch(
@@ -84,6 +77,8 @@ const TaskDetailPage = () => {
       const schoolsSubmitted = new Set();
       const accountsRequired = [];
       const accountsSubmitted = [];
+      let latestSubmissionTime = null;
+      let latestRemarks = "PENDING";
 
       data.forEach((assignment) => {
         if (!assignment.school_name || !assignment.account_name) return;
@@ -92,6 +87,15 @@ const TaskDetailPage = () => {
         if (assignment.status === "COMPLETE") {
           schoolsSubmitted.add(assignment.school_name);
           accountsSubmitted.push({ ...assignment, status: "COMPLETE" });
+
+          const updatedAt = assignment.status_updated_at;
+          if (updatedAt) {
+            const updatedDate = new Date(updatedAt);
+            if (!latestSubmissionTime || updatedDate > latestSubmissionTime) {
+              latestSubmissionTime = updatedDate;
+              latestRemarks = assignment.remarks || "TURNED IN ON TIME";
+            }
+          }
         }
         accountsRequired.push({
           ...assignment,
@@ -106,6 +110,8 @@ const TaskDetailPage = () => {
         accounts_required: accountsRequired,
         accounts_submitted: accountsSubmitted,
         accounts_not_submitted: accountsRequired.filter(acc => acc.status !== "COMPLETE"),
+        completedTime: latestSubmissionTime ? latestSubmissionTime.toISOString() : null,
+        remarks: latestRemarks, // ✅ Critical for late detection
       };
     } catch (err) {
       console.error("❌ Failed to fetch task assignments:", err);
@@ -113,7 +119,6 @@ const TaskDetailPage = () => {
     }
   };
 
-  // ✅ Only run once when component mounts OR when initialTask changes
   useEffect(() => {
     const loadAndEnrichTask = async () => {
       setLoading(true);
@@ -124,7 +129,6 @@ const TaskDetailPage = () => {
         return;
       }
 
-      // If already enriched, skip fetching
       if (
         initialTask.schools_required &&
         initialTask.accounts_required &&
@@ -135,7 +139,6 @@ const TaskDetailPage = () => {
         return;
       }
 
-      // If no focal user, just show raw task
       if (!selectedFocal) {
         setTask(initialTask);
         setLoading(false);
@@ -145,7 +148,7 @@ const TaskDetailPage = () => {
       try {
         const enrichment = await fetchAssignmentsForSingleTask(
           initialTask.task_id,
-          currentUserRef.current?.token
+          token
         );
 
         const enrichedTask = {
@@ -156,36 +159,26 @@ const TaskDetailPage = () => {
         setTask(enrichedTask);
       } catch (err) {
         setError("Failed to load school assignments.");
-        setTask(initialTask); // Still show base task
+        setTask(initialTask);
       } finally {
         setLoading(false);
       }
     };
 
-    // Run only once per mount (no deps = runs once)
-    // We're not watching `initialTask` here because it's derived from location.state
-    // and should be stable unless route changes
     loadAndEnrichTask();
-  }, []); // 👈 Empty dependency array — runs once on mount
+  }, [initialTask, selectedFocal, token]); // ✅ Fixed dependencies
 
-  // Update completion status based on task_status
   useEffect(() => {
     const status = task?.task_status || state?.task_status;
     if (status === "COMPLETE") {
       setIsCompleted(true);
-      setIsLate(false);
-    } else if (status === "INCOMPLETE") {
-      setIsCompleted(false);
-      setIsLate(true);
     } else {
       setIsCompleted(false);
-      setIsLate(false);
     }
   }, [task?.task_status, state?.task_status]);
 
   const handleBack = () => navigate(-1);
 
-  // Handle task not found
   if (!initialTask && !state) {
     return (
       <div className="task-detail-app">
@@ -236,21 +229,14 @@ const TaskDetailPage = () => {
           <IoChevronBackOutline className="icon-md" /> Back
         </button>
         <TaskDescription
-          task={task || {
-            title: task?.title,
-            deadline: task?.deadline,
-            creation_date: task?.creation_date,
-            description: task?.description,
-            task_id: task?.task_id,
-            creator_name: task?.creator_name,
-            task_status: task?.task_status || "ONGOING",
-            section: task?.sectionName,
-          }}
+          task={task}
           creator_name={task?.creator_name}
           creation_date={task?.creation_date}
+          completion_date={task?.completedTime || state?.completion_date || task?.completion_date}
           deadline={task?.deadline}
           description={task?.description}
           isCompleted={isCompleted}
+          remarks={task?.remarks} // ✅ Pass remarks to enable late detection
         />
       </div>
 

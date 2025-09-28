@@ -1,17 +1,20 @@
+
+
 .task-description {
   padding: 1rem 1.5rem; 
   background: #fff;
   border-radius: 8px;
+  position: relative;
 }
 
 .task-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 15px;
   margin-bottom: 15px;
 }
 
-.task-icon {
+.task-description-icon {
   background: #333;
   color: white;
   width: 40px;
@@ -21,11 +24,42 @@
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  flex-shrink: 0;
 }
 
-.task-icon svg {
+.task-description-icon svg {
   width: 20px;
   height: 20px;
+}
+
+/* 💙 Pulsing animation for incomplete tasks (blue) */
+@keyframes pulse-blue {
+  0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(33, 150, 243, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
+}
+
+/* 🔴 Pulsing animation for overdue tasks (red) */
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(211, 47, 47, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+}
+
+.task-icon-pulse-red {
+  animation: pulse-red 2s infinite;
+}
+
+.task-icon-pulse {
+  animation: pulse-blue 2s infinite;
+}
+
+.task-title-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex: 1;
+  gap: 15px;
 }
 
 .task-title {
@@ -35,9 +69,71 @@
   margin: 0;
   line-height: 30px;
   flex: 1;
+  word-break: break-word;
 }
 
-.task-due{
+.task-actions-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.task-options-button {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #7f8c8d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.task-options-button:hover {
+  background-color: #f8f9fa;
+  color: #34495e;
+}
+
+/* Options dropdown */
+.options-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #2c3e50;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.delete {
+  color: #e74c3c;
+}
+
+.dropdown-item.delete:hover {
+  background-color: #fdf2f2;
+}
+
+.task-due {
   font-size: 12px;
 }
 
@@ -59,7 +155,7 @@
   color: black;
 }
 
-.task-divider {
+.divider {
   height: 1px;
   background-color: #ddd;
   margin: 8px 0;
@@ -78,24 +174,14 @@
   color: #333;
 }
 
-/* Error Container */
-.error-container {
-  text-align: center;
-  padding: 40px 20px;
-  color: #666;
+/* Late badge */
+.task-late-badge {
+  color: #ff9800;
+  font-weight: bold;
+  margin-left: 6px;
 }
 
-.error-container p {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.error-container small {
-  font-size: 14px;
-  color: #999;
-}
-
-/* ✅ Updated container for multiple links */
+/* Links */
 .task-links-container {
   margin-top: 1.5rem;
   padding: 12px;
@@ -113,7 +199,6 @@
   color: #333;
 }
 
-/* ✅ Style each link */
 .task-links-container .task-link {
   display: block;
   overflow: hidden;
@@ -138,25 +223,272 @@
   color: #666;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .task-detail-main {
-    padding: 20px;
-    margin-top: 20px;
+/* In TaskDescription.css */
+.task-links-section {
+  margin-top: 1.5rem;
+}
+
+.task-link-header {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.task-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Error Container */
+.error-container {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.error-container p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.error-container small {
+  font-size: 14px;
+  color: #999;
+}
+
+/* ============= MEDIA QUERIES FOR MOBILE ============= */
+
+@media (max-width: 767px) {
+  .task-description {
+    padding: 16px 12px;
+    border-radius: 0;
   }
-  
+
   .task-header {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .task-description-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .task-description-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .task-title-container {
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
   }
-  
+
+  .task-title {
+    font-size: 18px;
+    line-height: 1.4;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .task-actions-container {
+    position: relative;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  .task-options-button {
+    padding: 8px;
+    border-radius: 50%;
+    color: #7f8c8d;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    padding-left: 260px;
+    margin-top: -45px;
+    transition: all 0.2s;
+  }
+
+  .options-dropdown {
+    min-width: 160px;
+    right: 0;
+    left: auto;
+  }
+
+  .dropdown-item {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
   .task-meta {
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
+    margin-bottom: 12px;
+    font-size: 13px;
   }
-  
-  .task-title {
+
+  .task-category {
+    font-weight: 600;
+  }
+
+  .task-due,
+  .task-completed {
+    font-size: 13px;
+  }
+
+  .task-late-badge {
+    font-size: 13px;
+  }
+
+  .divider {
+    margin: 12px 0;
+  }
+
+  .task-author {
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .task-author .dot-space {
+    margin: 0 6px;
+  }
+
+  .task-body {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .task-links-container {
+    margin-top: 16px;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .task-links-container .task-link-label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .task-links-container .task-link {
+    font-size: 13px;
+    padding: 6px 0;
+  }
+
+  .task-links-container .task-link::after {
+    font-size: 0.7em;
+  }
+}
+
+@media (max-width: 375px) {
+  .task-description {
+    padding: 14px 10px;
+  }
+
+  .task-header {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .task-description-icon {
+    width: 40px;
+    height: 40px;
     font-size: 20px;
+  }
+
+  .task-description-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .task-title {
+    font-size: 17px;
+  }
+
+  .task-actions-container {
+    margin-top: 1px;
+  }
+
+  .task-options-button {
+    padding: 6px;
+  }
+
+  .options-dropdown {
+    min-width: 140px;
+  }
+
+  .dropdown-item {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .task-meta {
+    font-size: 12px;
+    gap: 3px;
+    margin-bottom: 10px;
+  }
+
+  .task-due,
+  .task-completed {
+    font-size: 12px;
+  }
+
+  .task-late-badge {
+    font-size: 12px;
+  }
+
+  .divider {
+    margin: 10px 0;
+  }
+
+  .task-author {
+    font-size: 12px;
+    margin-bottom: 14px;
+    gap: 4px;
+  }
+
+  .task-author .dot-space {
+    margin: 0 4px;
+  }
+
+  .task-body {
+    font-size: 14px;
+  }
+
+  .task-links-container {
+    margin-top: 14px;
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .task-links-container .task-link-label {
+    font-size: 13px;
+  }
+
+  .task-links-container .task-link {
+    font-size: 12px;
+    padding: 5px 0;
+  }
+
+  .task-links-container .task-link::after {
+    font-size: 0.6em;
   }
 }

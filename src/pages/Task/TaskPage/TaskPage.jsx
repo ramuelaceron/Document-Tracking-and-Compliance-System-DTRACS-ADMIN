@@ -6,10 +6,11 @@ import config from "../../../config";
 import "./TaskPage.css";
 
 const TaskPage = () => {
-  const [hasLoaded, setHasLoaded] = useState(false); // 👈 Add this
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [selectedSort, setSelectedSort] = useState("newest");
   const [tasks, setTasks] = useState({});
   const [loading, setLoading] = useState(true);
+  // Optional: keep error for logging, but don't render UI
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,10 +18,9 @@ const TaskPage = () => {
   const currentUser = useMemo(() => {
     const item = sessionStorage.getItem("currentUser");
     return item ? JSON.parse(item) : null;
-  }, []); // 👈 Only parse once on mount
+  }, []);
 
-  // ✅ Get selectedFocal (which is now user_id) from Outlet context
-  const { selectedFocal } = useOutletContext(); // 👈 This is the user_id!
+  const { selectedFocal } = useOutletContext();
 
   const isOfficeWithoutSection = currentUser?.role === "office" && (
     !currentUser.section_designation ||
@@ -29,8 +29,6 @@ const TaskPage = () => {
     currentUser.section_designation === "NULL"
   );
 
-  // ✅ CORRECTED: Fetch assignments for one task
-  // This function now correctly parses the single array of assignment objects returned by the backend
   const fetchAssignmentsForTask = async (task_id, token) => {
     try {
       const response = await fetch(
@@ -46,44 +44,31 @@ const TaskPage = () => {
         throw new Error(`Failed to fetch assignments for task ${task_id}: ${response.statusText}`);
       }
       const data = await response.json();
-
-      // ✅ LOG RAW ASSIGNMENTS
       console.log(`[API Response - Assignments for task_id: ${task_id}]`, data);
 
-      // ✅ PARSE THE BACKEND'S ACTUAL RESPONSE: An ARRAY of assignment objects
       const assignments = Array.isArray(data) ? data : [];
 
-      // Extract unique school names and build detailed account arrays
       const schoolsRequired = new Set();
       const schoolsSubmitted = new Set();
-
       const accountsRequired = [];
       const accountsSubmitted = [];
 
       assignments.forEach((assignment) => {
-        // Ensure we have required fields
         if (!assignment.school_name || !assignment.account_name) return;
 
-        // Add school to required list
         schoolsRequired.add(assignment.school_name);
 
-        // If status is COMPLETE, add to submitted lists
         if (assignment.status === "COMPLETE") {
           schoolsSubmitted.add(assignment.school_name);
-          accountsSubmitted.push({
-            ...assignment,
-            status: "COMPLETE", // Ensure consistency
-          });
+          accountsSubmitted.push({ ...assignment, status: "COMPLETE" });
         }
 
-        // Always add account to required list
         accountsRequired.push({
           ...assignment,
-          status: assignment.status || "ONGOING", // Default if missing
+          status: assignment.status || "ONGOING",
         });
       });
 
-      // Convert sets back to arrays
       const schoolsRequiredArray = Array.from(schoolsRequired);
       const schoolsSubmittedArray = Array.from(schoolsSubmitted);
 
@@ -108,30 +93,25 @@ const TaskPage = () => {
     }
   };
 
-  // ✅ OPTIMIZED: Fetch ALL task assignments in ONE parallel batch
   const enrichTasksWithAssignments = async (rawTasks, token) => {
-
-    // STEP 1: Collect ALL task objects across ALL sections
-    const allTasks = []; // Store full task objects
-    const taskToSectionMap = {}; // Map task_id -> sectionName and original task object
+    const allTasks = [];
+    const taskToSectionMap = {};
 
     Object.entries(rawTasks).forEach(([sectionName, sections]) => {
       sections.forEach((section) => {
         section.tasklist.forEach((task) => {
-          allTasks.push(task); // Add the full task object
-          taskToSectionMap[task.task_id] = { sectionName, section, task }; // Keep track of where it came from
+          allTasks.push(task);
+          taskToSectionMap[task.task_id] = { sectionName, section, task };
         });
       });
     });
 
-    // STEP 2: Fetch ALL assignments in ONE parallel batch
     const assignmentPromises = allTasks.map((task) =>
       fetchAssignmentsForTask(task.task_id, token)
     );
 
     const assignmentResults = await Promise.all(assignmentPromises);
 
-    // STEP 3: Rebuild the nested tasks structure using the results
     const enrichedTasks = {};
 
     Object.entries(rawTasks).forEach(([sectionName, sections]) => {
@@ -139,15 +119,10 @@ const TaskPage = () => {
 
       sections.forEach((section) => {
         const enrichedSection = { ...section };
-        // Replace tasklist with updated tasks
         enrichedSection.tasklist = section.tasklist.map((task) => {
-          // Find the corresponding assignment result using the task_id
           const index = allTasks.findIndex(t => t.task_id === task.task_id);
           const assignmentData = index !== -1 ? assignmentResults[index] : {};
-          return {
-            ...task,
-            ...assignmentData, // Merge assignment data onto the task
-          };
+          return { ...task, ...assignmentData };
         });
 
         enrichedSections.push(enrichedSection);
@@ -160,15 +135,15 @@ const TaskPage = () => {
   };
 
   useEffect(() => {
-    // 🚫 Skip if no focal selected
     if (!selectedFocal) {
-      setLoading(false);
+      setLoading(true);
+      setHasLoaded(false); // Ensure hasLoaded is true even if no focal
       return;
     }
 
-    // 🚫 Skip if we already fetched tasks for this focal (optional optimization)
     if (Object.keys(tasks).length > 0) {
       console.log(`[INFO] Tasks already loaded for user_id: ${selectedFocal}. Skipping refetch.`);
+      setLoading(false);
       return;
     }
 
@@ -186,11 +161,12 @@ const TaskPage = () => {
             },
           }
         );
+
         if (!response.ok) {
           throw new Error(`Failed to fetch tasks: ${response.statusText}`);
         }
-        const rawData = await response.json();
 
+        const rawData = await response.json();
         console.log(`[API Response - Raw Tasks for user_id: ${selectedFocal}]`, rawData);
 
         const groupedBySection = rawData.reduce((acc, task) => {
@@ -208,21 +184,23 @@ const TaskPage = () => {
           return acc;
         }, {});
 
-        const enrichedTasks = await enrichTasksWithAssignments(groupedBySection, token);
-        setTasks(enrichedTasks);
-        setHasLoaded(true); // 👈 SET THIS AFTER SUCCESSFUL LOAD
+    const enrichedTasks = await enrichTasksWithAssignments(groupedBySection, token);
+
+    setTasks(enrichedTasks);
+    setHasLoaded(true); // Set hasLoaded to true after successful fetch
       } catch (err) {
         console.error("Error fetching and enriching tasks:", err);
-        setError(err.message);
+        // Instead of setting an error, we'll just set empty tasks
+        setTasks({});
+        setHasLoaded(true);
       } finally {
         setLoading(false);
       }
     };
 
     fetchAndEnrichTasks();
-  }, [selectedFocal, currentUser]); // Still depends on them, but currentUser is now memoized
+  }, [selectedFocal, currentUser]);
 
-  // ✅ Memoized computed values — unchanged
   const allOffices = useMemo(() => {
     if (!tasks || typeof tasks !== 'object') return [];
     return [
@@ -291,7 +269,6 @@ const TaskPage = () => {
     return { upcomingTasks: upcoming, pastDueTasks: pastDue, completedTasks: completed };
   }, [tasks]);
 
-  // ✅ Sort utility — unchanged
   const sortTasks = (tasks, sortOption) => {
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -324,7 +301,7 @@ const TaskPage = () => {
     }
   };
 
-  // ✅ Return UI
+  // Handle "no section" case
   if (isOfficeWithoutSection) {
     return (
       <div className="no-section-page">
@@ -340,17 +317,7 @@ const TaskPage = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="error-container" style={{ padding: "2rem", textAlign: "center", color: "red" }}>
-        <p>❌ Failed to load tasks: {error}</p>
-        <button onClick={() => window.location.reload()} style={{ marginTop: "1rem", padding: "0.5rem 1rem" }}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
+  // ✅ NO ERROR UI — just render Outlet with possibly empty data
   return (
     <div className="task-layout">
       <TaskTabs
@@ -369,7 +336,7 @@ const TaskPage = () => {
           allOffices,
           selectedFocal,
           loading,
-          hasLoaded, // 👈 ADD THIS
+          hasLoaded,
         }}
       />
     </div>
