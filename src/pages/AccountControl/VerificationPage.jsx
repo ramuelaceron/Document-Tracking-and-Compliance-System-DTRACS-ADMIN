@@ -97,45 +97,45 @@ const VerificationPage = () => {
   };
 
   const handleDeny = async () => {
-  if (!selectedAccount?.user_id) {
-    toast.error("❌ No valid account selected.");
-    return;
-  }
+    if (!selectedAccount?.user_id) {
+      toast.error("❌ No valid account selected.");
+      return;
+    }
 
-  const userId = selectedAccount.user_id;
-  const isSchool = selectedAccount.type === "School";
-  const endpoint = isSchool
-    ? "/admin/school/request/delete/id/"
-    : "/admin/focal/request/delete/id/";
+    const userId = selectedAccount.user_id;
+    const isSchool = selectedAccount.type === "School";
+    const endpoint = isSchool
+      ? "/admin/school/request/delete/id/"
+      : "/admin/focal/request/delete/id/";
 
-  try {
-    const response = await fetch(
-      `${config.API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userId)}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+    try {
+      const response = await fetch(
+        `${config.API_BASE_URL}${endpoint}?user_id=${encodeURIComponent(userId)}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
+      let data = {};
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
       }
-    );
 
-    let data = {};
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-      data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || `HTTP ${response.status}: Failed to deny account`);
+      }
+
+      toast.warn(`${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
+      setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
+      setTimeout(handleCloseModal, 100);
+    } catch (err) {
+      console.error("Deny failed:", err);
+      toast.error(`❌ Deny failed: ${err.message}`);
     }
-
-    if (!response.ok) {
-      throw new Error(data.message || `HTTP ${response.status}: Failed to deny account`);
-    }
-
-    toast.warn(`${getDisplayName(selectedAccount)} has been denied.`, { autoClose: 2000 });
-    setAccounts((prev) => prev.filter((acc) => acc.user_id !== userId));
-    setTimeout(handleCloseModal, 100);
-  } catch (err) {
-    console.error("Deny failed:", err);
-    toast.error(`❌ Deny failed: ${err.message}`);
-  }
-};
+  };
 
   const handleVerify = async () => {
   if (!selectedAccount?.user_id) {

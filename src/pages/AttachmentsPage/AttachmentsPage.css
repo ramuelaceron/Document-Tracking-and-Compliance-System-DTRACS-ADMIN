@@ -1,16 +1,16 @@
 /* src/pages/AttachmentsPage/AttachmentsPage.css */
 .attachments-page {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background-color: #ffffff;
   min-height: 100vh;
   padding: 74px 0 40px;
   color: #202124;
+  margin-left: 10px;
 }
 
 .attachments-back-btn {
   background: none;
   border: none;
-  color: #1a73e8;
+  color: #000;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
@@ -18,7 +18,9 @@
   align-items: center;
   gap: 8px;
   padding: 0 24px;
-  margin-bottom: 24px;
+  margin-bottom: 35px;
+  margin-top: -2px;
+
   text-decoration: none;
   transition: color 0.2s;
   font-family: inherit;
@@ -29,6 +31,10 @@
   color: #0d47a1;
   text-decoration: underline;
 }
+
+ .attachments-back-btn .icon-md {
+    font-size: 15px;
+  }
 
 .attachments-header {
   padding: 0 24px;
